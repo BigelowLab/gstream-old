@@ -1,0 +1,18 @@
+Package: gsi
+Type: Package
+Title: Gulf Stream data
+Version: 0.1.0
+Author: Ben Tupper <btupper@bigelow.org>, 
+  Johnathan Evanilla <btupper@bigelow.org>, 
+  Adam Kemberling <akemberling@gmri.org>  
+Maintainer: Ben Tupper <btupper@bigelow.org>
+URL: https://github.com/bigelowlab/gsi
+Description: R-language tools for workign with Guld Stream data.
+License: MIT + file LICENSE
+Encoding: UTF-8
+RoxygenNote: 7.2.3
+Roxygen: list(markdown = TRUE)
+Imports:
+  rlang,
+  sf,
+  dplyr
