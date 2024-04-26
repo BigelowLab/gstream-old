@@ -1,4 +1,4 @@
-Package: gsi
+Package: gstream
 Type: Package
 Title: Gulf Stream data
 Version: 0.1.0
@@ -6,7 +6,7 @@ Author: Ben Tupper <btupper@bigelow.org>,
   Johnathan Evanilla <btupper@bigelow.org>, 
   Adam Kemberling <akemberling@gmri.org>  
 Maintainer: Ben Tupper <btupper@bigelow.org>
-URL: https://github.com/bigelowlab/gsi
+URL: https://github.com/bigelowlab/gstream
 Description: R-language tools for workign with Guld Stream data.
 License: MIT + file LICENSE
 Encoding: UTF-8

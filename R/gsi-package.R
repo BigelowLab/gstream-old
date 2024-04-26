@@ -1,7 +1,7 @@
-#' egad package
+#' gstream package
 #'
-#' @name egad
+#' @name gstream
 #' @docType package
-#' @description R-language tools for workign with Guld Stream data.
+#' @description R-language tools for working with Gulf Stream data.
 #' @importFrom rlang .data 
 "_PACKAGE"

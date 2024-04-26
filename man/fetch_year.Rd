@@ -5,14 +5,14 @@
 \title{Fetch a single file}
 \usage{
 fetch_year(
-  year = 2010,
+  year = "NavoGS_2010.tar",
   base_uri = "https://ftp.opc.ncep.noaa.gov/grids/experimental/GStream"
 )
 }
 \arguments{
-\item{year}{num or char, the 4 digit year}
-
 \item{base_uri}{char, the base uri}
+
+\item{filename}{the name of the file}
 }
 \value{
 sf MULTIPOINT data frame

@@ -1,13 +1,17 @@
+known_files = function(){
+  
+}
+
 #' Fetch a single file
 #' 
 #' @export
-#' @param year num or char, the 4 digit year
+#' @param filename the name of the file
 #' @param base_uri char, the base uri
 #' @return sf MULTIPOINT data frame
-fetch_year = function(year = 2010,
+fetch_year = function(year = "NavoGS_2010.tar",
                       base_uri = 'https://ftp.opc.ncep.noaa.gov/grids/experimental/GStream'){
   
-  src = file.path(base_uri, sprintf("NavoGS_%0.4i.tar", as.integer(year[1])))
+  src = file.path(base_uri, filename)
   tmpdir = file.path(tempdir(check = TRUE), "gsi")
   if (!dir.exists(tmpdir)) ok = dir.create(tmpdir, recursive = TRUE)
   dest = tempfile(fileext = ".tar", tmpdir = tmpdir)
