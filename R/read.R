@@ -1,16 +1,24 @@
 #' Extract data out of the text line with date info
 #' 
+#' @export
 #' @param x cahr, the line of text with the date
 #' @return Date class object
-get_date_navy = function(x){
-  as.Date(x, format = "RMKS/1. GULF STREAM NORTH WALL DATA FOR %d %B %y:")
+get_date_usn = function(x){
+  fmt = if (grepl("^RMKS/1", x[1])) {
+    "RMKS/1. GULF STREAM NORTH WALL DATA FOR %d %B %y:"
+  } else {
+    "GULF STREAM NORTH WALL DATA FOR %d %B %y:"
+  }
+    
+  as.Date(x, format = fmt)
 }
 
 #' Given one or more formatted strings, retrieve a matrix of lon,lat
 #' 
+#' @export
 #' @param char, one or more character strings of point data as scraped from the URL
 #' @return matrix of point in lon, lat order
-extract_points_navy = function(x = c("26.5N79.8W 26.7N79.8W 26.9N79.8W 27.0N79.8W 27.2N79.8W 27.3N79.9W", 
+extract_points_usn = function(x = c("26.5N79.8W 26.7N79.8W 26.9N79.8W 27.0N79.8W 27.2N79.8W 27.3N79.9W", 
                                 "27.4N79.9W 27.5N80.0W 27.6N80.0W 27.8N80.1W 28.0N80.1W 28.1N80.2W")){
   r = lapply(strsplit(x, " ", fixed = TRUE),
              function(s){
@@ -21,55 +29,98 @@ extract_points_navy = function(x = c("26.5N79.8W 26.7N79.8W 26.9N79.8W 27.0N79.8
   do.call(rbind, r)
 } 
 
-#' Read the GS wall data in navy format
+#' Read the GS wall data in usn format
 #' 
+#' @export
 #' @param filename char, the name of file, a vector of files, or the nameof a
 #'   single tar file (with one or more *.sub files within)
 #' @param verbose logical, if TRUE output messages
 #' @return tibble or sf MULTIPOINT object
-read_wall_data_navy = function(filename, verbose = FALSE){
+read_wall_data_usn = function(filename, verbose = FALSE){
+
   if (grepl("^.*\\.tar$", filename[1])) {
-    tmpdir = file.path(dirname(filename[1]), "navy-temp")
+    # tar file
+    tmpdir = file.path(dirname(filename[1]), "usn-temp")
     if (!dir.exists(tmpdir)) ok = dir.create(tmpdir)
     ok = untar(filename, exdir = tmpdir)
     filenames = list.files(tmpdir, pattern = "^.*\\.sub$", full.names = TRUE)
-    xx = lapply(filenames, read_wall_data_navy, verbose = verbose) |>
+    xx = lapply(filenames, read_wall_data_usn, verbose = verbose) |>
       dplyr::bind_rows()
     ok = file.remove(filenames)
     unlink(tmpdir, force = TRUE, recursive = TRUE)
     return(xx)
   } else if (length(filename) > 1){
-    xx = lapply(filename, read_wall_data_navy, verbose = verbose) |>
+    # vector of filenames
+    xx = lapply(filename, read_wall_data_usn, verbose = verbose) |>
       dplyr::bind_rows()
     return(xx)
   }
+
   if (verbose) cat("reading:", basename(filename[1]), "\n")
   string = readLines(filename)
   
-  ix = grep("GULF STREAM NORTH WALL DATA", string, fixed = TRUE)
-  iy = grep("GULF STREAM SOUTH WALL DATA", string, fixed = TRUE)
+  # kluge to fix garbled files like "gs023nw.sub" and empty files
+  if (!dplyr::between(length(string), 50, 500)) {
+    if (verbose) cat(filename, "has", length(string), "lines.  Skipping\n") 
+    return(NULL)
+  }
+  
+  
+  ix = grep("GULF STREAM NORTH WALL DATA", string, fixed = TRUE) |>
+    tail(n=1L)
+  iy = grep("GULF STREAM SOUTH WALL DATA", string, fixed = TRUE) |>
+    tail(n = 1L)
   iz = grep("^ ", string) |> tail(n = 1L)
+  if (length(iy) == 0 && length(ix) > 0){
+    # north wall only
+    nindex = seq(from = ix + 1, to = iz, by = 1)
+    sindex = NULL
+    date = get_date_usn(string[ix])
+  } else if (length(ix)== 0 && length(iy > 0)){
+    # south wall only
+    nindex = NULL
+    sindex = seq(from = iy + 1, to = iz, by = 1)
+    date = get_date_usn(string[iy])
+  } else if (ix < iy){
+    # north first
+    nindex = seq(from = ix + 1, to = iy - 1, by = 1)
+    sindex = seq(from = iy + 1, to = iz, by = 1)
+    date = get_date_usn(string[ix])
+  } else if (ix > iy){
+    # south first
+    nindex = seq(from = ix + 1, to = iz, by = 1)
+    sindex = seq(from = iy + 1, to = ix - 1, by = 1)
+    date = get_date_usn(string[ix])
+  } else {
+    if (verbose) cat(filename, "has errors.  Skipping\n")
+    return(NULL)
+  }
   
-  date = get_date_navy(string[ix])
   
-  nwall = string[seq(from = ix + 1, to = iy - 1, by = 1)] |>
+  nwall = if (!is.null(nindex)){
+   string[nindex] |>
     trimws(which = "both") |>
-    extract_points_navy() |>
+    extract_points_usn() |>
     dplyr::as_tibble()  |>
     sf::st_as_sf(coords = c("lon", "lat"), crs = 4326) |>
     sf::st_union() |>
     sf::st_as_sf() |>
     dplyr::mutate(date = date, wall = "north", .before = 1)
-  
-  swall = string[seq(from = iy + 1, to = iz, by = 1)] |>
-    trimws(which = "both") |>
-    extract_points_navy() |>
-    dplyr::as_tibble() |>
-    sf::st_as_sf(coords = c("lon", "lat"), crs = 4326) |>
-    sf::st_union() |>
-    sf::st_as_sf() |>
-    dplyr::mutate(date = date, wall = "south",.before = 1)
-  
+  } else {
+    NULL
+  }
+  swall = if (!is.null(sindex)){
+    string[sindex] |>
+      trimws(which = "both") |>
+      extract_points_usn() |>
+      dplyr::as_tibble() |>
+      sf::st_as_sf(coords = c("lon", "lat"), crs = 4326) |>
+      sf::st_union() |>
+      sf::st_as_sf() |>
+      dplyr::mutate(date = date, wall = "south",.before = 1)
+  } else {
+    NULL
+  }
   dplyr::bind_rows(nwall, swall) 
 }
 
