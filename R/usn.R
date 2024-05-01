@@ -1,3 +1,38 @@
+#' List USN files
+#' 
+#' @export
+#' @return cahracter vector of filenames
+list_usn = function(){
+  path = system.file("usn", package = 'gstream')
+  list.files(path, full.names = TRUE)
+}
+
+#' Read one or more US Navy wall data files
+#' 
+#' @export
+#' @param year num or char, one or more years to read, or "all" for reading them
+#'  all.
+#' @return SF multipoint table
+read_usn = function(year = "all"){
+  
+  files = list_usn()
+  
+  if (!inherits(year, "character")){
+    year = sprintf("%0.4i", year)
+  }
+  
+  if (!("all" %in% year)){
+    fileyears = sub(".geojson", "", basename(files), fixed = TRUE)
+    ix = fileyears %in% year
+    files = files[ix]
+  }
+  
+  lapply(files, sf::read_sf) |>
+    dplyr::bind_rows()
+}
+
+
+
 #' Extract data out of the text line with date info
 #' 
 #' @export
