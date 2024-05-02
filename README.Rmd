@@ -90,10 +90,11 @@ plot(points, type = "b")
 
 ```{r}
 xy = as.matrix(xy)
+nx = nrow(xy)
 nindex = rep(NA_real_, nx)
 index = as.character(nindex)
 index[1] = as.character(which.min(xy[,1]))
-m = st_distance(d,d)
+m = st_distance(points, points)
 dimnames(m) = list(seq_len(nx), seq_len(nx))
 
 for (i in seq(1, nx)){

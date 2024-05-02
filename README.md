@@ -57,3 +57,64 @@ plot(sf::st_geometry(coast), add = TRUE)
 ```
 
 ![](README_files/figure-gfm/unnamed-chunk-2-1.png)<!-- -->
+
+### Ordering USN data
+
+The USN data is not ordered, that is the points for a given day are not
+following a polyline. Is it possible to order them? If not, is it
+possible to approximate an order?
+
+``` r
+d = dplyr::filter(x, date == as.Date("2020-12-19"), wall == "north")
+plot(sf::st_geometry(d), type = "l", axes = TRUE)
+```
+
+![](README_files/figure-gfm/unnamed-chunk-3-1.png)<!-- -->
+
+Maybe translate
+[this](https://stackoverflow.com/questions/37742358/sorting-points-to-form-a-continuous-line)
+into R? Or
+[this](https://stackoverflow.com/questions/60495463/r-find-nearest-neighbor-for-selected-point)?
+
+#### Find the most western point
+
+This isn’t necessarily the starting point, but we can return to that
+later.
+
+It looks like it scanes south to north.
+
+``` r
+points = sf::st_geometry(d) |>
+  sf::st_cast("POINT") |>
+  sf::st_as_sf() |>
+  sf::st_set_geometry("geometry") |>
+  #dplyr::slice(100:105) |>
+  dplyr::mutate(id = seq_len(dplyr::n()), .before = 1)
+
+xy = sf::st_coordinates(points) |>
+  dplyr::as_tibble()
+nx = nrow(xy)
+
+ilat = order(xy[["Y"]])
+xy = slice(xy, ilat)
+points = dplyr::slice(points, ilat)
+plot(points, type = "b")
+```
+
+![](README_files/figure-gfm/unnamed-chunk-4-1.png)<!-- -->
+
+``` r
+xy = as.matrix(xy)
+nx = nrow(xy)
+nindex = rep(NA_real_, nx)
+index = as.character(nindex)
+index[1] = as.character(which.min(xy[,1]))
+m = st_distance(points, points)
+dimnames(m) = list(seq_len(nx), seq_len(nx))
+
+for (i in seq(1, nx)){
+  ix = order(m[index[i],]) # mixed 
+  nindex[i+1] = ix[2] + if ((ix[2]) %in% nindex) 1 else 0
+  index[i+1] = as.character(nindex[i+1])
+}
+```
