@@ -89,6 +89,7 @@ plot(points, type = "b")
 ```
 
 ```{r}
+xy = as.matrix(xy)
 nindex = rep(NA_real_, nx)
 index = as.character(nindex)
 index[1] = as.character(which.min(xy[,1]))
