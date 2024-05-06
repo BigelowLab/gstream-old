@@ -14,5 +14,6 @@ RoxygenNote: 7.2.3
 Roxygen: list(markdown = TRUE)
 Imports:
   rlang,
+  yaml,
   sf,
   dplyr

@@ -20,11 +20,14 @@ install directly from github.
 
     remotes::install("BigelowLab/gstream)
 
-### Data from US Navy
+## Data from US Navy
 
-[FTP server](https://ftp.opc.ncep.noaa.gov/grids/experimental/GStream).
-A manually prepared dataset that identifies the north wall and south
-wall as unordered points.
+### Arhcived data
+
+[NOAA’s Ocean Prediction Center](https://ocean.weather.gov/) provides a
+FTP server\](<https://ftp.opc.ncep.noaa.gov/grids/experimental/GStream>)
+for downloads by year. We have downloaded these and repackaged into
+spatial format files - these are included with the `gstream` package.
 
 ``` r
 suppressPackageStartupMessages({
@@ -48,6 +51,9 @@ x = read_usn() |>
     ## $ wall     <chr> "north", "south", "north", "south", "north", "south", "north"…
     ## $ geometry <MULTIPOINT [°]> MULTIPOINT ((-80.2 25), (-8..., MULTIPOINT ((-77.5…
 
+This reads in all of the data stored with the package. We can then do a
+simple plot of all of the locations.
+
 ``` r
 bb = sf::st_bbox(x)
 coast = rnaturalearth::ne_coastline(scale = "medium", returnclass = "sf")
@@ -57,6 +63,41 @@ plot(sf::st_geometry(coast), add = TRUE)
 ```
 
 ![](README_files/figure-gfm/unnamed-chunk-2-1.png)<!-- -->
+
+### Downloading daily updates and configuration
+
+**Note** that you don’t need to create the configuration file if you are
+not downloading data.
+
+The daily data is hosted by by [NOAA’s Ocean Prediction
+Center](https://ocean.weather.gov/) In particular they post the US
+Navy’s [daily Gulf Stream point
+data](https://ocean.weather.gov/gulf_stream_latest.txt) for the north
+and south walls. These can be downloaded. We provide a mechanism for
+storing the URL of the daily data, the path to where you want to store
+the downloads and a simple script for downloading. The configuration can
+be stored anywhere, but by default we look for it isn `~/.gstream`.
+
+``` r
+cfg = read_configuration()
+cfg
+```
+
+    ## $usn
+    ## $usn$rawpath
+    ## [1] "/Users/ben/Dropbox/data/gstream/usn/raw"
+    ## 
+    ## $usn$dailyuri
+    ## [1] "https://ocean.weather.gov/gulf_stream_latest.txt"
+    ## 
+    ## $usn$ftpuri
+    ## [1] "https://ftp.opc.ncep.noaa.gov/grids/experimental/GStream"
+
+Obviously, you will want to modify the `rawpath` to suit your own needs.
+We then set up a cron job to make the daily download at local 6pm.
+
+    # gstream data
+    0 18 * * * /usr/local/bin/Rscript /Users/ben/Library/CloudStorage/Dropbox/code/projects/gsi/inst/scripts/usn_daily_download.R >> /dev/null 2>&1
 
 ### Ordering USN data
 
@@ -69,7 +110,7 @@ d = dplyr::filter(x, date == as.Date("2020-12-19"), wall == "north")
 plot(sf::st_geometry(d), type = "l", axes = TRUE)
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-3-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-4-1.png)<!-- -->
 
 Maybe translate
 [this](https://stackoverflow.com/questions/37742358/sorting-points-to-form-a-continuous-line)
@@ -101,7 +142,7 @@ points = dplyr::slice(points, ilat)
 plot(points, type = "b")
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-4-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-5-1.png)<!-- -->
 
 ``` r
 xy = as.matrix(xy)
