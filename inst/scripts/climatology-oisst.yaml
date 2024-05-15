@@ -5,5 +5,5 @@ output:
 agg:
   period: 
     - year
-    - month
+    - mon
   stat: sum

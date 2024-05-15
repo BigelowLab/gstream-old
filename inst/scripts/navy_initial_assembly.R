@@ -1,6 +1,6 @@
 library(gstream)
 
-inpath = "~/Downloads/gswall"
+inpath = "~/Downloads/gswall2023"
 outpath = "/Users/ben/Library/CloudStorage/Dropbox/code/projects/gsi/inst/usn"
 
 tars = list.files(inpath, pattern = glob2rx("*.tar"), full.names = TRUE)

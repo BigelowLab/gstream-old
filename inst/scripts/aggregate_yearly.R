@@ -75,7 +75,7 @@ main = function(cfg){
 
 
 args = commandArgs(trailingOnly = TRUE)
-if (length(args) == 0) args = "/Users/ben/Library/CloudStorage/Dropbox/code/projects/gsi/inst/scripts/agg-oisst-month.yaml"
+if (length(args) == 0) args = "/Users/ben/Library/CloudStorage/Dropbox/code/projects/gsi/inst/scripts/agg-oisst-year.yaml"
 cfg = yaml::read_yaml(args)
 
 if (!interactive()){
