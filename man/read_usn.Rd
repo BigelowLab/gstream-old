@@ -4,11 +4,13 @@
 \alias{read_usn}
 \title{Read one or more US Navy wall data files}
 \usage{
-read_usn(year = "all")
+read_usn(year = "all", deduplicate = TRUE)
 }
 \arguments{
 \item{year}{num or char, one or more years to read, or "all" for reading them
 all.}
+
+\item{deduplicate}{logical, if TRUE remove duplicates by date-wall}
 }
 \value{
 SF multipoint table

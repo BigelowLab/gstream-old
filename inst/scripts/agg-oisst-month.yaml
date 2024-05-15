@@ -1,0 +1,12 @@
+input:
+  filename: /Users/ben/Downloads/world.tif
+  crop: 
+    xmin: -90
+    ymin: 18
+    xmax: -34
+    ymax: 50
+output:
+  path: /Users/ben/Library/CloudStorage/Dropbox/data/gstream/agg/oisst
+agg:
+  period: month
+  stat: sum

@@ -1,0 +1,9 @@
+input:
+  path: /Users/ben/Library/CloudStorage/Dropbox/data/gstream/agg/oisst
+output:
+  path: /Users/ben/Library/CloudStorage/Dropbox/data/gstream/agg/oisst
+agg:
+  period: 
+    - year
+    - month
+  stat: sum

@@ -1,3 +1,16 @@
+#' Remove duplicates (by date and wall)
+#'
+#' We just keep the first occruence for each duplicate
+#' 
+#' @export
+#' @param x sf MUTLIPOINT table
+#' @return the input with duplicates dropped
+deduplicate_usn = function(x = read_usn()){
+  tag = paste(format(x$date, "%Y-%m-%d"), x$wall)
+  ix = duplicated(tag)
+  dplyr::filter(x, !ix)
+}
+
 #' List USN files
 #' 
 #' @export
@@ -12,8 +25,9 @@ list_usn = function(){
 #' @export
 #' @param year num or char, one or more years to read, or "all" for reading them
 #'  all.
+#' @param deduplicate logical, if TRUE remove duplicates by date-wall
 #' @return SF multipoint table
-read_usn = function(year = "all"){
+read_usn = function(year = "all", deduplicate = TRUE){
   
   files = list_usn()
   
@@ -27,8 +41,11 @@ read_usn = function(year = "all"){
     files = files[ix]
   }
   
-  lapply(files, sf::read_sf) |>
+  x = lapply(files, sf::read_sf) |>
     dplyr::bind_rows()
+  
+  if (deduplicate) x = deduplicate_usn(x)
+  x
 }
 
 
