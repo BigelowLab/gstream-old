@@ -28,6 +28,8 @@ install directly from github.
 FTP server\](<https://ftp.opc.ncep.noaa.gov/grids/experimental/GStream>)
 for downloads by year. We have downloaded these and repackaged into
 spatial format files - these are included with the `gstream` package.
+They also provide [daily
+updates](https://ocean.weather.gov/gulf_stream_latest.txt).
 
 ``` r
 suppressPackageStartupMessages({
@@ -36,16 +38,12 @@ suppressPackageStartupMessages({
   library(gstream)
   library(rnaturalearth)
 })
-```
 
-    ## Warning: package 'sf' was built under R version 4.3.2
-
-``` r
 x = read_usn() |>
   dplyr::glimpse()
 ```
 
-    ## Rows: 18,310
+    ## Rows: 3,909
     ## Columns: 3
     ## $ date     <date> 2010-01-22, 2010-01-22, 2010-01-25, 2010-01-25, 2010-01-27, …
     ## $ wall     <chr> "north", "south", "north", "south", "north", "south", "north"…
@@ -102,8 +100,7 @@ We then set up a cron job to make the daily download at local 6pm.
 ### Ordering USN data
 
 The USN data is not ordered, that is the points for a given day are not
-following a polyline. Is it possible to order them? If not, is it
-possible to approximate an order?
+following a polyline.
 
 ``` r
 d = dplyr::filter(x, date == as.Date("2020-12-19"), wall == "north")
@@ -112,50 +109,23 @@ plot(sf::st_geometry(d), type = "l", axes = TRUE)
 
 ![](README_files/figure-gfm/unnamed-chunk-4-1.png)<!-- -->
 
-Maybe translate
-[this](https://stackoverflow.com/questions/37742358/sorting-points-to-form-a-continuous-line)
-into R? Or
-[this](https://stackoverflow.com/questions/60495463/r-find-nearest-neighbor-for-selected-point)?
-
-#### Find the most western point
-
-This isn’t necessarily the starting point, but we can return to that
-later.
-
-It looks like it scanes south to north.
+But we **attempt** to order them. We have a start, but clearly there are
+cases where something goes awry.
 
 ``` r
-points = sf::st_geometry(d) |>
-  sf::st_cast("POINT") |>
-  sf::st_as_sf() |>
-  sf::st_set_geometry("geometry") |>
-  #dplyr::slice(100:105) |>
-  dplyr::mutate(id = seq_len(dplyr::n()), .before = 1)
-
-xy = sf::st_coordinates(points) |>
-  dplyr::as_tibble()
-nx = nrow(xy)
-
-ilat = order(xy[["Y"]])
-xy = slice(xy, ilat)
-points = dplyr::slice(points, ilat)
-plot(points, type = "b")
+do = order_usn(d)
+plot(sf::st_geometry(do), type = "l", axes = TRUE)
 ```
 
 ![](README_files/figure-gfm/unnamed-chunk-5-1.png)<!-- -->
 
-``` r
-xy = as.matrix(xy)
-nx = nrow(xy)
-nindex = rep(NA_real_, nx)
-index = as.character(nindex)
-index[1] = as.character(which.min(xy[,1]))
-m = st_distance(points, points)
-dimnames(m) = list(seq_len(nx), seq_len(nx))
+Sometimes it works.
 
-for (i in seq(1, nx)){
-  ix = order(m[index[i],]) # mixed 
-  nindex[i+1] = ix[2] + if ((ix[2]) %in% nindex) 1 else 0
-  index[i+1] = as.character(nindex[i+1])
-}
+``` r
+d = dplyr::filter(x, date == as.Date("2020-01-03"), wall == "north")
+do = order_usn(d)
+plot(sf::st_geometry(d), type = "l", axes = TRUE, reset= FALSE)
+plot(sf::st_geometry(do), type = "l", add = TRUE, col = "orange")
 ```
+
+![](README_files/figure-gfm/unnamed-chunk-6-1.png)<!-- -->
