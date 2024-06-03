@@ -5,10 +5,12 @@
 #' @param x a MULTIPOINT object
 #' @param type char, one of "LINESTRING" (default) or "MULTIPOINT"
 #' @return a LINESTRING object
-order_usn = function(x = read_usn(year = 2020),
-                                 type = c("LINESTRING", "MULTIPOINT")[1]){
+order_usn = function(x = read_usn(year = "2020") |> 
+                         dplyr::filter(date == as.Date("2020-12-19"), 
+                                       wall == "north"),
+                     type = c("LINESTRING", "MULTIPOINT")[1]){
   
-  x = dplyr::rowwise(x)|>
+  dplyr::rowwise(x)|>
     dplyr::group_map(
       function(tbl, key){
         
@@ -20,20 +22,19 @@ order_usn = function(x = read_usn(year = 2020),
                                dplyr::select(dplyr::all_of(c("X", "Y")))) |>
           dplyr::arrange(.data$X, .data$Y) |>
           dplyr::select(-dplyr::all_of(c("X", "Y"))) |>
+          dplyr::slice(seq_len(100)) |>
           dplyr::mutate(orig = seq_len(dplyr::n()), 
                         index = rep(0L, n()),
                         .before = 1) 
         CUR <- p$index[1] <- 1L
         D = sf::st_distance(p)
-        
+      
         for (i in seq_len(nrow(p))[-1]){
-          
           NEXT = FastKNN::k.nearest.neighbors(CUR, D, k = 1)
           p$index[i] = NEXT
           D[CUR,] <- Inf
           D[,CUR] <- Inf
           CUR = NEXT
-          
         }
         
         sf::st_geometry(tbl) <- dplyr::slice(p, p$index) |>
@@ -43,6 +44,24 @@ order_usn = function(x = read_usn(year = 2020),
         tbl
       }) |>
     dplyr::bind_rows()
+}
+
+textg = function(x, ..., what = c("all", "ends")){
+  if ("ends" %in% what){
+    p = sf::st_cast(dplyr::select(x, "geometry"), "POINT")
+    n = nrow(p)
+    text(dplyr::slice(p,1), labels = 1, ...)
+    text(dplyr::slice(p,n), labels = n, ...)
+  } else {
+    text(p, ...)
+  }
+}
+plotg = function(x, ...){
+  plot(st_geometry(x), ...)
+}
+plot2 = function(x, y){
+  plotg(x, axes = T, type = "l", reset = FALSE)
+  plotg(y, add = TRUE, color = "orange")
 }
 
 #' Remove duplicates (by date and wall)
