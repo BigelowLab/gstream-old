@@ -243,4 +243,14 @@ read_wall_data_usn = function(filename, verbose = FALSE){
 }
 
 
+#' Retrieve a prepared example file of the north wall
+#' 
+#' @export
+#' @param filename char, the name of the file
+#' @return sf table
+usn_example = function(filename = system.file("examples/2020-12-19-north.gpkg",
+                                              package = "gstream")){
+  sf::read_sf(filename)
+}
+
 
