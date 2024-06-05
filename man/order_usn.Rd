@@ -5,7 +5,7 @@
 \title{Convert a MULTIPOINT to a LINESTRING (or MULTIPOINT) but an attempt to order
 from lower left (SW) to upper right (NE)}
 \usage{
-order_usn(x = read_usn(year = 2020), type = c("LINESTRING", "MULTIPOINT")[1])
+order_usn(x = usn_example(), type = c("LINESTRING", "MULTIPOINT")[1])
 }
 \arguments{
 \item{x}{a MULTIPOINT object}

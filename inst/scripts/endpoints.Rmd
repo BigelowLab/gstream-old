@@ -1,0 +1,36 @@
+---
+title: "Finding endpoints"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+[NOAA's Ocean Prediction Center](https://ocean.weather.gov/) provides a FTP server](https://ftp.opc.ncep.noaa.gov/grids/experimental/GStream) for downloads by year.  They also provide [almost daily updates](https://ocean.weather.gov/gulf_stream_latest.txt). The dataset provides a manually estimate of locations along the so-called north and south walls of the Gulf Stream, although there is ongoing research and debate about the best way to define the Gulf Stream.
+
+The dataset provides an interesting spatial problem because the points for a specific wall on a given data are **not** ordered.  Assuming that the points can be ordered into LINESTRING, the problem is how to do it.
+
+I probably can use [sfnetworks](https://luukvdmeer.github.io/sfnetworks/) extensive tools to follow a shortest path... but first one of the two endpoints must be found.  Eeek! How does one do that programmatically?  Shown the example below, you can see that the northeast most point is probably easy to find programmatically, but how would one find the southwestern starting point?
+
+Below the plot shows the points for the north wall on 2020-12-19.  Also shown are the first and last points in the record which are clearly not the endpoints of a path we might assemble form the points.
+
+```{r}
+suppressPackageStartupMessages({
+  library(sf)
+  library(readr)
+  library(dplyr)
+})
+
+
+file = "https://raw.githubusercontent.com/BigelowLab/gstream/main/inst/examples/2020-12-19-north.csv"
+x = readr::read_csv(file, col_types = "nn") |>
+  sf::st_as_sf(coords = c("X", "Y"), crs = 4326) |>
+  sf::st_as_sf()
+
+
+p = sf::st_cast(dplyr::select(x, attr(x, "sf_column")), "POINT")
+plot(sf::st_geometry(x), type = "b", axes = TRUE, reset = FALSE)
+plot(dplyr::slice(p,1), col = "orange", add = TRUE, pch = 2, cex = 1.5)
+plot(dplyr::slice(p,nrow(x)), col = "orange", add = TRUE, pch = 6, cex = 1.5)
+```

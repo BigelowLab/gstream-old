@@ -5,16 +5,14 @@
 #' @param x a MULTIPOINT object
 #' @param type char, one of "LINESTRING" (default) or "MULTIPOINT"
 #' @return a LINESTRING object
-order_usn = function(x = read_usn(year = "2020") |> 
-                         dplyr::filter(date == as.Date("2020-12-19"), 
-                                       wall == "north"),
+order_usn = function(x = usn_example(),
                      type = c("LINESTRING", "MULTIPOINT")[1]){
   
   dplyr::rowwise(x)|>
     dplyr::group_map(
       function(tbl, key){
         
-        p = dplyr::select(tbl, "geometry") |>
+        p = dplyr::select(tbl, attr(tbl, "sf_column")) |>
           sf::st_cast("POINT") 
         p = dplyr::bind_cols(p,
                              sf::st_coordinates(p) |>
@@ -22,7 +20,6 @@ order_usn = function(x = read_usn(year = "2020") |>
                                dplyr::select(dplyr::all_of(c("X", "Y")))) |>
           dplyr::arrange(.data$X, .data$Y) |>
           dplyr::select(-dplyr::all_of(c("X", "Y"))) |>
-          dplyr::slice(seq_len(100)) |>
           dplyr::mutate(orig = seq_len(dplyr::n()), 
                         index = rep(0L, n()),
                         .before = 1) 
@@ -247,10 +244,45 @@ read_wall_data_usn = function(filename, verbose = FALSE){
 #' 
 #' @export
 #' @param filename char, the name of the file
+#' @param reorder logical, if TRUE try to reorder the points
 #' @return sf table
 usn_example = function(filename = system.file("examples/2020-12-19-north.gpkg",
-                                              package = "gstream")){
-  sf::read_sf(filename)
+                                              package = "gstream"),
+                       reorder = TRUE){
+  x = sf::read_sf(filename)
+  if (reorder) x = order_usn(x)
+  x
 }
 
+#' Convert USN LINESTRING features to sfnetworks
+#'
+#' @export
+#' @param x sf LINESTRING table
+#' @return list of networks, one per input row
+usn_to_network = function(x = usn_example()){
+  crs = sf::st_crs(x)
+  nets = dplyr::rowwise(x) |>
+    dplyr::group_map(
+      function(tbl, key){
+        nodes = dplyr::select(tbl, attr(x, "sf_column")) |>
+          sf::st_cast("POINT")
+        ix = seq_len(nrow(nodes))
+        nix = length(ix)
+        
+        edges = sapply(seq_len(nix),
+          function(i){
+            nexti = ifelse(i < nix, i + 1, 1)
+            dplyr::slice(nodes, c(i, nexti)) |> 
+              sf::st_combine() |>
+              sf::st_cast("LINESTRING")
+          }) |>
+          sf::st_as_sfc(crs = crs) |>
+          sf::st_as_sf()
+        n = nrow(edges)
+        edges$from = seq_len(n)
+        edges$to = c(seq_len(n-1) + 1, 1)
 
+        sfnetworks::sfnetwork(nodes, edges, message = FALSE)
+      }) # group_map_function
+  nets
+}
