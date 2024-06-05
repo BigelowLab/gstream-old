@@ -18,7 +18,7 @@ Serving Gulf Stream datasets directly from R.
 Use the [remotes](https://CRAN.R-project.org/package=remotes) package to
 install directly from github.
 
-    remotes::install_github("BigelowLab/gstream")
+    remotes::install("BigelowLab/gstream)
 
 ## Data from US Navy
 
@@ -109,17 +109,9 @@ plot(sf::st_geometry(d), type = "l", axes = TRUE)
 
 ![](README_files/figure-gfm/unnamed-chunk-4-1.png)<!-- -->
 
-But we **attempt** to order them. We have a start, but clearly there are
-cases where something goes awry.
-
-``` r
-do = order_usn(d)
-plot(sf::st_geometry(do), type = "l", axes = TRUE)
-```
-
-![](README_files/figure-gfm/unnamed-chunk-5-1.png)<!-- -->
-
-Sometimes it works.
+With thanks to [Dewey
+Dunnington](https://gist.github.com/paleolimbot/0be47836de5008f308959923dac02c5b#gistcomment-5079768)
+we can reorder them into a single `LINESTRING`.
 
 ``` r
 d = dplyr::filter(x, date == as.Date("2020-01-03"), wall == "north")
@@ -128,4 +120,4 @@ plot(sf::st_geometry(d), type = "l", axes = TRUE, reset= FALSE)
 plot(sf::st_geometry(do), type = "l", add = TRUE, col = "orange")
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-6-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-5-1.png)<!-- -->

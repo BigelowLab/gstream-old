@@ -85,15 +85,7 @@ d = dplyr::filter(x, date == as.Date("2020-12-19"), wall == "north")
 plot(sf::st_geometry(d), type = "l", axes = TRUE)
 ```
 
-
-But we **attempt** to order them.  We have a start, but clearly there are cases where something goes awry.
-
-```{r}
-do = order_usn(d)
-plot(sf::st_geometry(do), type = "l", axes = TRUE)
-```
-
-Sometimes it works.
+With thanks to [Dewey Dunnington](https://gist.github.com/paleolimbot/0be47836de5008f308959923dac02c5b#gistcomment-5079768) we can reorder them into a single `LINESTRING`.
 
 ```{r}
 d = dplyr::filter(x, date == as.Date("2020-01-03"), wall == "north")

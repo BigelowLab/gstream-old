@@ -5,39 +5,27 @@
 #' @param x a MULTIPOINT object
 #' @param type char, one of "LINESTRING" (default) or "MULTIPOINT"
 #' @return a LINESTRING object
-order_usn = function(x = usn_example(),
+order_usn = function(x = usn_example(ordered = FALSE),
                      type = c("LINESTRING", "MULTIPOINT")[1]){
   
   dplyr::rowwise(x)|>
     dplyr::group_map(
       function(tbl, key){
         
-        p = dplyr::select(tbl, attr(tbl, "sf_column")) |>
-          sf::st_cast("POINT") 
-        p = dplyr::bind_cols(p,
-                             sf::st_coordinates(p) |>
-                               dplyr::as_tibble() |>
-                               dplyr::select(dplyr::all_of(c("X", "Y")))) |>
-          dplyr::arrange(.data$X, .data$Y) |>
-          dplyr::select(-dplyr::all_of(c("X", "Y"))) |>
-          dplyr::mutate(orig = seq_len(dplyr::n()), 
-                        index = rep(0L, n()),
-                        .before = 1) 
-        CUR <- p$index[1] <- 1L
-        D = sf::st_distance(p)
-      
-        for (i in seq_len(nrow(p))[-1]){
-          NEXT = FastKNN::k.nearest.neighbors(CUR, D, k = 1)
-          p$index[i] = NEXT
-          D[CUR,] <- Inf
-          D[,CUR] <- Inf
-          CUR = NEXT
-        }
-        
-        sf::st_geometry(tbl) <- dplyr::slice(p, p$index) |>
+        p = sf::st_cast(dplyr::select(tbl, attr(tbl, "sf_column")), "POINT")
+        index = sf::st_coordinates(p) |>
+          dplyr::as_tibble() |>
+          rlang::set_names(c("x", "y")) |>
+          s2::as_s2_lnglat() |>
+          order_points()
+        p = dplyr::slice(p, index) |>
           sf::st_geometry() |>
           sf::st_combine() |>
           sf::st_cast(type)
+        
+        sf::st_geometry(tbl) <- p
+                                  
+                                  
         tbl
       }) |>
     dplyr::bind_rows()
@@ -244,13 +232,16 @@ read_wall_data_usn = function(filename, verbose = FALSE){
 #' 
 #' @export
 #' @param filename char, the name of the file
-#' @param reorder logical, if TRUE try to reorder the points
+#' @param type char, one of "LINESTRING" (default) or "MULTIPOINT"
+#' @param ordered logical, if TRUE try to reorder the points
 #' @return sf table
 usn_example = function(filename = system.file("examples/2020-12-19-north.gpkg",
                                               package = "gstream"),
-                       reorder = TRUE){
+                       type = c("LINESTRING", "MULTIPOINT")[1],
+                       ordered = TRUE){
   x = sf::read_sf(filename)
-  if (reorder) x = order_usn(x)
+  if (type == "LINESTRING") x = sf::st_cast(x, "LINESTRING")
+  if (ordered) x = order_usn(x, type = type)
   x
 }
 

@@ -6,13 +6,16 @@
 \usage{
 usn_example(
   filename = system.file("examples/2020-12-19-north.gpkg", package = "gstream"),
-  reorder = TRUE
+  type = c("LINESTRING", "MULTIPOINT")[1],
+  ordered = TRUE
 )
 }
 \arguments{
 \item{filename}{char, the name of the file}
 
-\item{reorder}{logical, if TRUE try to reorder the points}
+\item{type}{char, one of "LINESTRING" (default) or "MULTIPOINT"}
+
+\item{ordered}{logical, if TRUE try to reorder the points}
 }
 \value{
 sf table

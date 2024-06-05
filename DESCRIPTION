@@ -2,9 +2,10 @@ Package: gstream
 Type: Package
 Title: Gulf Stream data
 Version: 0.1.0
-Author: Ben Tupper <btupper@bigelow.org>, 
+Author: Ben Tupper [aut, cre] <btupper@bigelow.org>, 
   Johnathan Evanilla <btupper@bigelow.org>, 
-  Adam Kemberling <akemberling@gmri.org>  
+  Adam Kemberling <akemberling@gmri.org>,
+  Dewey Dunnington [ctb] (<https://orcid.org/0000-0002-9415-4582>)
 Maintainer: Ben Tupper <btupper@bigelow.org>
 URL: https://github.com/bigelowlab/gstream
 Description: R-language tools for workign with Guld Stream data.
@@ -15,6 +16,6 @@ Roxygen: list(markdown = TRUE)
 Imports:
   rlang,
   yaml,
-  FastKNN,
+  s2,
   sf,
   dplyr
