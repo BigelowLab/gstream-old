@@ -79,7 +79,7 @@ list_usn = function(what = c("orig", "ordered")){
 #' @param what char, if "ordered" then read the ordered data, or "orig" for unordered.
 #' @param deduplicate logical, if TRUE remove duplicates by date-wall
 #' @return SF multipoint table
-read_usn = function(year = "all", what = "ordered", deduplicate = (what != "ordered"){
+read_usn = function(year = "all", what = "ordered", deduplicate = (what != "ordered")){
   
   files = list_usn(what = what)
   
@@ -88,7 +88,7 @@ read_usn = function(year = "all", what = "ordered", deduplicate = (what != "orde
   }
   
   if (!("all" %in% year)){
-    fileyears = sub(".geojson", "", basename(files), fixed = TRUE)
+    fileyears = sub(".gpkg", "", basename(files), fixed = TRUE)
     ix = fileyears %in% year
     files = files[ix]
   }

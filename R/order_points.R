@@ -14,7 +14,7 @@ sf_as_s2lnglat = function(x = read_usn(ordered = FALSE)){
     )
 } 
 
-#' Retrieve the order indices from an unodered list of points 
+#' Retrieve the order indices from an unordered list of points 
 #' 
 #' @seealso \href{https://gist.github.com/paleolimbot/0be47836de5008f308959923dac02c5b}{Help from R-sig-geo}
 #' @param vertices s2_lnglat unorder points
