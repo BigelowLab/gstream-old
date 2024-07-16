@@ -42,7 +42,7 @@ suppressPackageStartupMessages({
   library(rnaturalearth)
 })
 
-x = read_usn() |>
+x = read_usn(what = "orig") |>
   dplyr::glimpse()
 ```
 

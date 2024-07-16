@@ -39,7 +39,7 @@ suppressPackageStartupMessages({
   library(rnaturalearth)
 })
 
-x = read_usn() |>
+x = read_usn(what = "orig") |>
   dplyr::glimpse()
 ```
 
@@ -56,7 +56,7 @@ simple plot of all of the locations.
 bb = sf::st_bbox(x)
 coast = rnaturalearth::ne_coastline(scale = "medium", returnclass = "sf")
 
-plot(x['wall'], pch = 3, axes = TRUE, reset = FALSE)
+plot(x['wall'], pch = ".", axes = TRUE, reset = FALSE)
 plot(sf::st_geometry(coast), add = TRUE)
 ```
 
@@ -78,12 +78,18 @@ be stored anywhere, but by default we look for it isn `~/.gstream`.
 
 ``` r
 cfg = read_configuration()
+```
+
+    ## Warning in readLines(file, warn = readLines.warn): incomplete final line found
+    ## on '~/.gstream'
+
+``` r
 cfg
 ```
 
     ## $usn
     ## $usn$rawpath
-    ## [1] "/Users/ben/Dropbox/data/gstream/usn/raw"
+    ## [1] "/mnt/s1/projects/ecocast/coredata/gstream/usn/raw"
     ## 
     ## $usn$dailyuri
     ## [1] "https://ocean.weather.gov/gulf_stream_latest.txt"
