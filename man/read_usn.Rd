@@ -4,7 +4,7 @@
 \alias{read_usn}
 \title{Read one or more US Navy wall data files}
 \usage{
-read_usn(year = "all", what = "ordered", deduplicate = TRUE)
+read_usn(year = "all", what = "ordered", deduplicate = (what != "ordered"))
 }
 \arguments{
 \item{year}{num or char, one or more years to read, or "all" for reading them

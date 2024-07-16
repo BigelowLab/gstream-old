@@ -1,0 +1,35 @@
+---
+title: "Gulf Stream Width"
+author: "B Tupper, J Evanilla"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Gulf Stream Width}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r}
+suppressPackageStartupMessages({
+  library(sf)
+  library(dplyr)
+  library(gstream)
+  library(rnaturalearth)
+})
+
+All = gstream::read_usn()
+bb = sf::st_bbox(All)
+x = All |>
+  dplyr::slice_max(date)
+
+coast = rnaturalearth::ne_coastline(scale = "medium", returnclass = "sf")
+plot(x['wall'], pch = ".", axes = TRUE, reset = FALSE, extent = bb, key.pos = NULL)
+plot(sf::st_geometry(coast), add = TRUE)
+```

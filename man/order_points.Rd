@@ -2,7 +2,7 @@
 % Please edit documentation in R/order_points.R
 \name{order_points}
 \alias{order_points}
-\title{Retrieve the order indices from an unodered list of points}
+\title{Retrieve the order indices from an unordered list of points}
 \usage{
 order_points(vertices = sf_as_s2lnglat()[[1]], max_distance = 40000)
 }
@@ -15,7 +15,7 @@ order_points(vertices = sf_as_s2lnglat()[[1]], max_distance = 40000)
 numeric index vector into the input
 }
 \description{
-Retrieve the order indices from an unodered list of points
+Retrieve the order indices from an unordered list of points
 }
 \seealso{
 \href{https://gist.github.com/paleolimbot/0be47836de5008f308959923dac02c5b}{Help from R-sig-geo}
