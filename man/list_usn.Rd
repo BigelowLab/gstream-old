@@ -4,7 +4,7 @@
 \alias{list_usn}
 \title{List USN files}
 \usage{
-list_usn()
+list_usn(what = c("orig", "ordered"))
 }
 \value{
 cahracter vector of filenames

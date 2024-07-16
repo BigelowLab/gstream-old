@@ -66,8 +66,8 @@ deduplicate_usn = function(x = read_usn()){
 #' 
 #' @export
 #' @return cahracter vector of filenames
-list_usn = function(){
-  path = system.file("usn", package = 'gstream')
+list_usn = function(what = c("orig", "ordered")){
+  path = system.file("usn", what[1], package = 'gstream')
   list.files(path, full.names = TRUE)
 }
 
@@ -76,11 +76,12 @@ list_usn = function(){
 #' @export
 #' @param year num or char, one or more years to read, or "all" for reading them
 #'  all.
+#' @param what char, if "ordered" then read the ordered data, or "orig" for unordered.
 #' @param deduplicate logical, if TRUE remove duplicates by date-wall
 #' @return SF multipoint table
-read_usn = function(year = "all", deduplicate = TRUE){
+read_usn = function(year = "all", what = "ordered", deduplicate = (what != "ordered"){
   
-  files = list_usn()
+  files = list_usn(what = what)
   
   if (!inherits(year, "character")){
     year = sprintf("%0.4i", year)

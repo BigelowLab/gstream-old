@@ -2,8 +2,8 @@
 % Please edit documentation in R/gsi-package.R
 \docType{package}
 \name{gstream}
-\alias{gstream-package}
 \alias{gstream}
+\alias{gstream-package}
 \title{gstream package}
 \description{
 R-language tools for working with Gulf Stream data.
