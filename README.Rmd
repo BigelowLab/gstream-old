@@ -52,7 +52,7 @@ This reads in all of the data stored with the package. We can then do a simple p
 bb = sf::st_bbox(x)
 coast = rnaturalearth::ne_coastline(scale = "medium", returnclass = "sf")
 
-plot(x['wall'], pch = 3, axes = TRUE, reset = FALSE)
+plot(x['wall'], pch = ".", axes = TRUE, reset = FALSE)
 plot(sf::st_geometry(coast), add = TRUE)
 ```
 
