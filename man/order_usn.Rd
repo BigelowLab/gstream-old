@@ -7,13 +7,16 @@ from lower left (SW) to upper right (NE)}
 \usage{
 order_usn(
   x = usn_example(ordered = FALSE),
-  type = c("LINESTRING", "MULTIPOINT")[1]
+  type = c("LINESTRING", "MULTIPOINT")[1],
+  direction = c("any", "eastward", "westward")[2]
 )
 }
 \arguments{
 \item{x}{a MULTIPOINT object}
 
 \item{type}{char, one of "LINESTRING" (default) or "MULTIPOINT"}
+
+\item{direction}{chr one of "any", "eastward" (default), "westward"}
 }
 \value{
 a LINESTRING object

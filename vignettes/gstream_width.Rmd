@@ -23,7 +23,7 @@ suppressPackageStartupMessages({
   library(gstream)
   library(rnaturalearth)
 })
-
+coast = rnaturalearth::ne_coastline(scale = "medium", returnclass = "sf")
 
 All = gstream::read_usn()
 bb = sf::st_bbox(All)
@@ -39,11 +39,18 @@ BB = sf::st_bbox(c(xmin = west, ymin = south, xmax = east, ymax = north),
   sf::st_as_sfc()
 
 
-coast = rnaturalearth::ne_coastline(scale = "medium", returnclass = "sf")
-plot(x['wall'], pch = ".", axes = TRUE, reset = FALSE, extent = bb, key.pos = NULL)
+
+plot(x['wall'], pch = ".", axes = TRUE, reset = FALSE, extent = BB, key.pos = NULL)
 plot(BB, add = TRUE)
 plot(sf::st_geometry(coast), add = TRUE)
 ```
 
 
+```{r}
+z = st_crop(x, BB) |> order_usn()
+p = st_cast(z, "POINT")
 
+plot(z['wall'], reset = FALSE)
+plot(p['wall'] |> dplyr::filter(wall == 'north') |> dplyr::slice(1), add = TRUE)
+#plot(p['wall'] |> dplyr::filter(wall == 'south') |> dplyr::slice(1), add = TRUE)
+```

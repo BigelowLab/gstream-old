@@ -1,12 +1,41 @@
+#' Convert daily north-south wall pairs to a closed polygon (hopefully one!)
+#' 
+#' @export
+#' @param x sf table of wall data.  Only matched north-south pairs for 
+#'   each given daya are converted. All others are dropped.
+#' @param sf table of polygons by date
+walls_to_polygons = function(x){
+  dplyr::group_by(x, date, wall) |>
+    dplyr::group_map(
+      function(tbl, key){
+        if (nrow(tbl) != 2) return(NULL)
+        tbl = dplyr::arrange(tbl, .data$wall)
+        n = sf::st_coordinates(dplyr::filter(tbl, wall == "north"))
+        s = sf::st_coordinates(dplyr::filter(tbl, wall == "south"))
+        s = s[rev(seq_len(nrow(s))), ]
+        m = do.call(rbind, list(n, s, n[1,]))[,1:2]
+        p = sf::st_polygon(x = list(m)) |>
+          sf::st_cast("POLYGON") |>
+          sf::st_sfc(crs = sf::st_crs(tbl)) |>
+          sf::st_as_sf() |>
+          dplyr::mutate(date = tbl$date[1], .before = 1)
+        
+        }, .keep = TRUE) |>
+    dplyr::bind_rows()
+}
+
+
 #' Convert a MULTIPOINT to a LINESTRING (or MULTIPOINT) but an attempt to order
 #' from lower left (SW) to upper right (NE)
 #' 
 #' @export
 #' @param x a MULTIPOINT object
 #' @param type char, one of "LINESTRING" (default) or "MULTIPOINT"
+#' @param direction chr one of "any", "eastward" (default), "westward"
 #' @return a LINESTRING object
 order_usn = function(x = usn_example(ordered = FALSE),
-                     type = c("LINESTRING", "MULTIPOINT")[1]){
+                     type = c("LINESTRING", "MULTIPOINT")[1],
+                     direction = c("any","eastward", "westward")[2] ){
   
   dplyr::rowwise(x)|>
     dplyr::group_map(
@@ -18,7 +47,23 @@ order_usn = function(x = usn_example(ordered = FALSE),
           rlang::set_names(c("x", "y")) |>
           s2::as_s2_lnglat() |>
           order_points()
-        p = dplyr::slice(p, index) |>
+        p = dplyr::slice(p, index)
+  
+        if (tolower(direction[1]) != "any"){
+          xy = sf::st_coordinates(p)
+          n = nrow(xy)
+          if (tolower(direction[1]) == "eastward"){
+            # first more eastern (larger) than last?
+            # -70, -50  is fine
+            # -50 -70 must be reversed
+            if (xy[1,1] > xy[n,1]) p = p[rev(seq_len(n)),]
+          } else if (tolower(direction[1]) == "westward"){
+            # first point is more easterward (smaller) than last?
+            if (xy[1,1] < xy[n,1]) p = p[rev(seq_len(n)),]
+          }
+        }
+      
+        p = p |>  
           sf::st_geometry() |>
           sf::st_combine() |>
           sf::st_cast(type)
@@ -29,6 +74,8 @@ order_usn = function(x = usn_example(ordered = FALSE),
         tbl
       }) |>
     dplyr::bind_rows()
+  
+  
 }
 
 textg = function(x, ..., what = c("all", "ends")){

@@ -19,6 +19,7 @@ sf_as_s2lnglat = function(x = read_usn(ordered = FALSE)){
 #' @seealso \href{https://gist.github.com/paleolimbot/0be47836de5008f308959923dac02c5b}{Help from R-sig-geo}
 #' @param vertices s2_lnglat unorder points
 #' @param max_distance numeric, the maximum neighbor distance
+
 #' @return numeric index vector into the input
 order_points = function(vertices = sf_as_s2lnglat()[[1]],
                         max_distance = 40000){
@@ -68,6 +69,8 @@ order_points = function(vertices = sf_as_s2lnglat()[[1]],
       used_indices <- c(last_used_index, used_indices)
     }
   }
+  
+
   
   used_indices
 }
