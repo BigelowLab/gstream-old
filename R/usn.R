@@ -57,8 +57,11 @@ plot2 = function(x, y){
 #' @param x sf MUTLIPOINT table
 #' @return the input with duplicates dropped
 deduplicate_usn = function(x = read_usn()){
+  is_dup = function(x){
+
   tag = paste(format(x$date, "%Y-%m-%d"), x$wall)
-  ix = duplicated(tag)
+  duplicated(tag)
+}
   dplyr::filter(x, !ix)
 }
 

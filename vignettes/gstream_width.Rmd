@@ -25,8 +25,6 @@ suppressPackageStartupMessages({
 })
 
 
-
-
 All = gstream::read_usn()
 bb = sf::st_bbox(All)
 x = All |>

@@ -8,7 +8,7 @@ known_files = function(){
 #' @param filename the name of the file
 #' @param base_uri char, the base uri
 #' @return sf MULTIPOINT data frame
-fetch_year = function(year = "NavoGS_2010.tar",
+fetch_year = function(filename = "NavoGS_2010.tar",
                       base_uri = 'https://ftp.opc.ncep.noaa.gov/grids/experimental/GStream'){
   
   src = file.path(base_uri, filename)
@@ -20,7 +20,7 @@ fetch_year = function(year = "NavoGS_2010.tar",
   files = list.files(tmpdir, 
                      pattern = "^.*\\.sub$",
                      recursive = TRUE, full.names = TRUE)
-  x = lapply(files, read_wall_data) |>
+  x = lapply(files, read_wall_data_usn) |>
     dplyr::bind_rows()
   ok = unlink(tmpdir, force = TRUE, recursive = TRUE)
   x
