@@ -16,6 +16,8 @@ knitr::opts_chunk$set(
 )
 ```
 
+Load the data and select the first data (north and south walls) as an example.
+
 ```{r}
 suppressPackageStartupMessages({
   library(sf)
@@ -29,7 +31,11 @@ All = gstream::read_usn()
 bb = sf::st_bbox(All)
 x = All |>
   dplyr::slice_max(date)
+```
 
+
+Now make a somewhat arbitrary box.
+```{r}
 west = -71
 east = -61
 north = 45
@@ -46,11 +52,30 @@ plot(sf::st_geometry(coast), add = TRUE)
 ```
 
 
-```{r}
-z = st_crop(x, BB) |> order_usn()
+
+Now we crop the wall data to the box.  Plotted below shows that the lines are both oriented eastward (first point of each plotted with circle symbol.)
+
+```{r, warning = FALSE}
+z = st_crop(x, BB) 
 p = st_cast(z, "POINT")
 
-plot(z['wall'], reset = FALSE)
-plot(p['wall'] |> dplyr::filter(wall == 'north') |> dplyr::slice(1), add = TRUE)
-#plot(p['wall'] |> dplyr::filter(wall == 'south') |> dplyr::slice(1), add = TRUE)
+plot(z['wall'], reset = FALSE, extent = BB)
+plot(p['wall'] |> dplyr::filter(wall == 'north') |> dplyr::slice(1), add = TRUE, col = "black")
+plot(p['wall'] |> dplyr::filter(wall == 'south') |> dplyr::slice(1), add = TRUE, col = "black")
+plot(sf::st_geometry(coast), add = TRUE)
+```
+
+
+Now merge the two lines into a closed polygon.
+
+```{r, warning = FALSE}
+poly = walls_to_polygons(z)
+
+
+plot(z['wall'], reset = FALSE, extent = BB)
+plot(poly[1], add = TRUE)
+plot(z['wall'], add = TRUE)
+plot(p['wall'] |> dplyr::filter(wall == 'north') |> dplyr::slice(1), add = TRUE, col = "black")
+plot(p['wall'] |> dplyr::filter(wall == 'south') |> dplyr::slice(1), add = TRUE, col = "black")
+plot(sf::st_geometry(coast), add = TRUE)
 ```

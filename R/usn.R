@@ -5,7 +5,7 @@
 #'   each given daya are converted. All others are dropped.
 #' @param sf table of polygons by date
 walls_to_polygons = function(x){
-  dplyr::group_by(x, date, wall) |>
+  dplyr::group_by(x, date) |>
     dplyr::group_map(
       function(tbl, key){
         if (nrow(tbl) != 2) return(NULL)
@@ -14,7 +14,7 @@ walls_to_polygons = function(x){
         s = sf::st_coordinates(dplyr::filter(tbl, wall == "south"))
         s = s[rev(seq_len(nrow(s))), ]
         m = do.call(rbind, list(n, s, n[1,]))[,1:2]
-        p = sf::st_polygon(x = list(m)) |>
+        sf::st_polygon(x = list(m)) |>
           sf::st_cast("POLYGON") |>
           sf::st_sfc(crs = sf::st_crs(tbl)) |>
           sf::st_as_sf() |>
