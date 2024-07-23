@@ -4,11 +4,14 @@
 \alias{walls_to_polygons}
 \title{Convert daily north-south wall pairs to a closed polygon (hopefully one!)}
 \usage{
-walls_to_polygons(x)
+walls_to_polygons(x, bb = NULL)
 }
 \arguments{
 \item{x}{sf table of wall data.  Only matched north-south pairs for
-each given daya are converted. All others are dropped.}
+each given data are converted. All others are dropped.}
+
+\item{bb}{bounding box (or object from which we can get a bounding box) to crop to
+or NULL to skip}
 
 \item{sf}{table of polygons by date}
 }

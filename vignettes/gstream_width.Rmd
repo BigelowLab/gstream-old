@@ -79,3 +79,21 @@ plot(p['wall'] |> dplyr::filter(wall == 'north') |> dplyr::slice(1), add = TRUE,
 plot(p['wall'] |> dplyr::filter(wall == 'south') |> dplyr::slice(1), add = TRUE, col = "black")
 plot(sf::st_geometry(coast), add = TRUE)
 ```
+
+
+Let's take a bigger slice of the dataset.
+
+```{r}
+
+All = mutate(All, month = format(date, "%b"))
+
+x = dplyr::filter(All, month == "Aug") 
+
+
+```
+
+
+
+
+```{r}
+area = sf::st_area()

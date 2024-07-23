@@ -2,9 +2,14 @@
 #' 
 #' @export
 #' @param x sf table of wall data.  Only matched north-south pairs for 
-#'   each given daya are converted. All others are dropped.
+#'   each given data are converted. All others are dropped.
+#' @param bb bounding box (or object from which we can get a bounding box) to crop to
+#'   or NULL to skip
 #' @param sf table of polygons by date
-walls_to_polygons = function(x){
+walls_to_polygons = function(x, bb = NULL){
+  
+  if (!is.null(bb)) x = sf::st_crop(x, bb)
+  
   dplyr::group_by(x, date) |>
     dplyr::group_map(
       function(tbl, key){
@@ -105,11 +110,10 @@ plot2 = function(x, y){
 #' @return the input with duplicates dropped
 deduplicate_usn = function(x = read_usn()){
   is_dup = function(x){
-
-  tag = paste(format(x$date, "%Y-%m-%d"), x$wall)
-  duplicated(tag)
-}
-  dplyr::filter(x, !ix)
+    tag = paste(format(x$date, "%Y-%m-%d"), x$wall)
+    duplicated(tag)
+  }
+  dplyr::filter(x, !is_dup(x))
 }
 
 #' List USN files
@@ -133,7 +137,9 @@ read_usn = function(year = "all", what = "ordered", deduplicate = (what != "orde
   
   files = list_usn(what = what)
   
-  if (!inherits(year, "character")){
+  if (inherits(year, "Date") || inherits(year, "POSIXt")){
+    year = format(year, "%Y")
+  } else if (!inherits(year, "character")){
     year = sprintf("%0.4i", year)
   }
   

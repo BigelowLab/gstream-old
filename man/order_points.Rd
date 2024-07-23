@@ -4,7 +4,10 @@
 \alias{order_points}
 \title{Retrieve the order indices from an unordered list of points}
 \usage{
-order_points(vertices = sf_as_s2lnglat()[[1]], max_distance = 40000)
+order_points(
+  vertices = sf_as_s2lnglat()[[1]],
+  max_distance = estimate_max_distance(vertices)
+)
 }
 \arguments{
 \item{vertices}{s2_lnglat unorder points}
