@@ -1,19 +1,10 @@
 ---
-title: "Gulf Stream Width"
-author: "B Tupper, J Evanilla"
-date: "`r Sys.Date()`"
-output: rmarkdown::html_vignette
-vignette: >
-  %\VignetteIndexEntry{Gulf Stream Width}
-  %\VignetteEngine{knitr::rmarkdown}
-  %\VignetteEncoding{UTF-8}
+title: "gstream_width"
+output: github_document
 ---
 
-```{r setup, include = FALSE}
-knitr::opts_chunk$set(
-  collapse = TRUE,
-  comment = "#>"
-)
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
 ```
 
 Load the data and select the first data (north and south walls) as an example.
@@ -24,11 +15,13 @@ suppressPackageStartupMessages({
   library(dplyr)
   library(gstream)
   library(rnaturalearth)
+  library(units)
+  library(ggplot2)
 })
 coast = rnaturalearth::ne_coastline(scale = "medium", returnclass = "sf")
 
 All = gstream::read_usn()
-bb = sf::st_bbox(All)
+BB = sf::st_bbox(All)
 x = All |>
   dplyr::slice_max(date)
 ```
@@ -40,14 +33,14 @@ west = -71
 east = -61
 north = 45
 south = 32
-BB = sf::st_bbox(c(xmin = west, ymin = south, xmax = east, ymax = north),
+bb = sf::st_bbox(c(xmin = west, ymin = south, xmax = east, ymax = north),
                  crs = sf::st_crs(All)) |>
   sf::st_as_sfc()
 
 
 
 plot(x['wall'], pch = ".", axes = TRUE, reset = FALSE, extent = BB, key.pos = NULL)
-plot(BB, add = TRUE)
+plot(bb, add = TRUE, lty = "dashed")
 plot(sf::st_geometry(coast), add = TRUE)
 ```
 
@@ -56,12 +49,13 @@ plot(sf::st_geometry(coast), add = TRUE)
 Now we crop the wall data to the box.  Plotted below shows that the lines are both oriented eastward (first point of each plotted with circle symbol.)
 
 ```{r, warning = FALSE}
-z = st_crop(x, BB) 
+z = crop_usn(x, bb) 
 p = st_cast(z, "POINT")
 
 plot(z['wall'], reset = FALSE, extent = BB)
 plot(p['wall'] |> dplyr::filter(wall == 'north') |> dplyr::slice(1), add = TRUE, col = "black")
 plot(p['wall'] |> dplyr::filter(wall == 'south') |> dplyr::slice(1), add = TRUE, col = "black")
+plot(bb, add = TRUE, lty = "dashed")
 plot(sf::st_geometry(coast), add = TRUE)
 ```
 
@@ -77,23 +71,38 @@ plot(poly[1], add = TRUE)
 plot(z['wall'], add = TRUE)
 plot(p['wall'] |> dplyr::filter(wall == 'north') |> dplyr::slice(1), add = TRUE, col = "black")
 plot(p['wall'] |> dplyr::filter(wall == 'south') |> dplyr::slice(1), add = TRUE, col = "black")
+plot(bb, add = TRUE, lty = "dashed")
 plot(sf::st_geometry(coast), add = TRUE)
 ```
 
 
-Let's take a bigger slice of the dataset.
+Let's take a bigger slice of the dataset.  Below we can see how the process can be streamlined (no pun intended).  We'll add a `month` category for subsequent plotting.
 
-```{r}
+```{r, warning = FALSE}
+VERBOSE = TRUE
+p = read_usn() |>
+  crop_usn(bb) |>
+  walls_to_polygons() |>
+  dplyr::mutate(month = factor(format(date, "%b"), levels = month.abb),  .after = 1)
+p
+```
 
-All = mutate(All, month = format(date, "%b"))
+Let's plot up some time series.
 
-x = dplyr::filter(All, month == "Aug") 
+```{r, warning = FALSE}
+ggplot(data = p, aes(x = date, y = area)) +
+  geom_point(alpha = 0.25) + 
+  labs(y = "Boxed Area", title = "Gulf Stream Boxed Area") + 
+  facet_wrap(~month)
+```
 
 
+```{r, warning = FALSE}
+ggplot(data = filter(p, yc < 100), aes(x = date, y = yc)) +
+  geom_point(alpha = 0.25) + 
+  labs(y = "Boxed Centroid Latitude", title = "Gulf Stream Boxed Centroid") + 
+  facet_wrap(~month)
 ```
 
 
 
-
-```{r}
-area = sf::st_area()

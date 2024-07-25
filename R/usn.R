@@ -5,28 +5,112 @@
 #'   each given data are converted. All others are dropped.
 #' @param bb bounding box (or object from which we can get a bounding box) to crop to
 #'   or NULL to skip
-#' @param sf table of polygons by date
-walls_to_polygons = function(x, bb = NULL){
+#' @param include char vector of desired elements to add.  Only "area" and "centroid" are known
+#' @param use_s2 logical, if TRUE then turn on use of the s2 engine
+#' @return sf table of polygons by date
+walls_to_polygons = function(x, bb = NULL, verbose = FALSE,
+                             include = c("area", "centroid"),
+                             use_s2 = FALSE){
   
-  if (!is.null(bb)) x = sf::st_crop(x, bb)
+  on.exit({
+    sf::sf_use_s2(orig_s2)
+  })
   
-  dplyr::group_by(x, date) |>
+  orig_s2 = sf::sf_use_s2(use_s2)
+  
+  if (!is.null(bb)) x = crop_usn(x, bb)
+  
+  if (!is.character(include)) include = "none"
+  
+  pp = dplyr::group_by(x, date) |>
     dplyr::group_map(
       function(tbl, key){
         if (nrow(tbl) != 2) return(NULL)
+        if (verbose) cat("w2p", format(tbl$date[1], "%Y-%m-%d"), "\n")
         tbl = dplyr::arrange(tbl, .data$wall)
         n = sf::st_coordinates(dplyr::filter(tbl, wall == "north"))
         s = sf::st_coordinates(dplyr::filter(tbl, wall == "south"))
         s = s[rev(seq_len(nrow(s))), ]
         m = do.call(rbind, list(n, s, n[1,]))[,1:2]
-        sf::st_polygon(x = list(m)) |>
+        p = sf::st_polygon(x = list(m)) |>
           sf::st_cast("POLYGON") |>
           sf::st_sfc(crs = sf::st_crs(tbl)) |>
           sf::st_as_sf() |>
           dplyr::mutate(date = tbl$date[1], .before = 1)
         
-        }, .keep = TRUE) |>
+        if ("centroid" %in% include){
+          xy = suppressWarnings(sf::st_centroid(p)) |>
+            sf::st_coordinates()
+          p = dplyr::mutate(p, xc = xy[1,1], yc = xy[1,2], .after = 1)
+        }
+      
+        if ("area" %in% include) {
+          p = dplyr::mutate(p, area = suppressWarnings(sf::st_area(p)), .after = 1)
+        }
+        
+        p
+      }, .keep = TRUE) 
+  
+    do.call(rbind, pp) |>
+      sf::st_set_geometry("geometry")
+}
+
+
+
+#' Crop USN wall data
+#' 
+#' @export
+#' @param x sf table of wall data.  Only matched north-south pairs for 
+#'   each given data are converted. All others are dropped.
+#' @param bb bounding box (or object from which we can get a bounding box) to crop
+#' @param resolve_multiline char, when \code{type} is LINESTRING a conflict may arise when
+#'   a wall is composed of multiple lines, which yields MULTILINESTRING.
+#'   Set this to retain just the longest LINESTRING or to use "keep" retain as MULTILINESTRING.
+#' @param use_s2 logical, if TRUE then turn on use of the s2 engine
+#' @return The input cropped.  If a particular line can not be cropped by s2, then 
+#'   that row of the input is dropped
+crop_usn = function(x, bb = sf::st_bbox(c(xmin = -71, ymin = 32, xmax = -61, ymax = 45),
+                                        crs = 4326) |>
+                            sf::st_as_sfc(),
+                    resolve_multiline = c("keep", "longest")[2],
+                    verbose = FALSE,
+                    use_s2 = FALSE){
+  
+  on.exit(sf::sf_use_s2(orig_s2))
+  
+  if (FALSE) {
+    bb = sf::st_bbox(c(xmin = -71, ymin = 32, xmax = -61, ymax = 45),
+                     crs = 4326) |>
+      sf::st_as_sfc() |>
+      sf::st_as_sf()
+    resolve_multiline = c("keep", "longest")[2]
+    verbose = FALSE
+    use_s2 = FALSE
+  }
+  
+  orig_s2 = sf::sf_use_s2(use_s2)
+  
+  suppressWarnings(sf::st_crop(x, bb)) |>
+    dplyr::rowwise() |>
+    dplyr::group_map(
+      function(tbl, key){
+        if (verbose) cat("crop_usn", tbl$wall[1], format(tbl$date[1], "%Y-%m-%d"), "\n")
+        if (inherits(tbl, "try-error")) return(NULL)
+        geomtype = get_geometry_type(tbl)
+        if (geomtype == "GEOMETRYCOLLECTION") {
+          tbl = sf::st_collection_extract(tbl, "LINESTRING")
+        }
+        if (geomtype != "LINESTRING" && 
+            tolower(resolve_multiline[1]) != "keep"){
+          tbl = suppressWarnings(sf::st_cast(tbl, "LINESTRING"))
+          ix = sf::st_length(tbl) |>
+            which.max()
+          tbl = dplyr::slice(tbl, ix)
+        }  
+        tbl
+      }) |>
     dplyr::bind_rows()
+  
 }
 
 
@@ -37,10 +121,14 @@ walls_to_polygons = function(x, bb = NULL){
 #' @param x a MULTIPOINT object
 #' @param type char, one of "LINESTRING" (default) or "MULTIPOINT"
 #' @param direction chr one of "any", "eastward" (default), "westward"
+#' @param resolve_multiline char, when \code{type} is LINESTRING a conflict may arise when
+#'   a wall is composed of multiple lines, which yields MULTILINESTRING.
+#'   Set this to keep just the longest LINESTRING or to keep them all as MULTILINESTRING.
 #' @return a LINESTRING object
 order_usn = function(x = usn_example(ordered = FALSE),
                      type = c("LINESTRING", "MULTIPOINT")[1],
-                     direction = c("any","eastward", "westward")[2] ){
+                     direction = c("any","eastward", "westward")[2],
+                     resolve_multiline = c("keep", "longest")[1]){
   
   dplyr::rowwise(x)|>
     dplyr::group_map(
@@ -73,8 +161,16 @@ order_usn = function(x = usn_example(ordered = FALSE),
           sf::st_combine() |>
           sf::st_cast(type)
         
+        # test if p is MULTILINESTRING, that the user wants LINESTRING and that
+        # the user chooses not to keep MULTILINESTRING
+        if (tolower(resolve_multiline[1]) != "keep" &&
+            get_geometry_type(p) != "LINESTRING" && 
+            toupper(type[1]) == "LINESTRING"){
+          p = sf::st_cast(p, "LINESTRING")
+          ix = which.max(sf::st_length(p))
+          p = p[ix]
+        }   
         sf::st_geometry(tbl) <- p
-                                  
                                   
         tbl
       }) |>

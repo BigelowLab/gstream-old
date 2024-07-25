@@ -4,7 +4,13 @@
 \alias{walls_to_polygons}
 \title{Convert daily north-south wall pairs to a closed polygon (hopefully one!)}
 \usage{
-walls_to_polygons(x, bb = NULL)
+walls_to_polygons(
+  x,
+  bb = NULL,
+  verbose = FALSE,
+  include = c("area", "centroid"),
+  use_s2 = FALSE
+)
 }
 \arguments{
 \item{x}{sf table of wall data.  Only matched north-south pairs for
@@ -13,7 +19,12 @@ each given data are converted. All others are dropped.}
 \item{bb}{bounding box (or object from which we can get a bounding box) to crop to
 or NULL to skip}
 
-\item{sf}{table of polygons by date}
+\item{include}{char vector of desired elements to add.  Only "area" and "centroid" are known}
+
+\item{use_s2}{logical, if TRUE then turn on use of the s2 engine}
+}
+\value{
+sf table of polygons by date
 }
 \description{
 Convert daily north-south wall pairs to a closed polygon (hopefully one!)

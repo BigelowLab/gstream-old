@@ -8,7 +8,8 @@ from lower left (SW) to upper right (NE)}
 order_usn(
   x = usn_example(ordered = FALSE),
   type = c("LINESTRING", "MULTIPOINT")[1],
-  direction = c("any", "eastward", "westward")[2]
+  direction = c("any", "eastward", "westward")[2],
+  resolve_multiline = c("keep", "longest")[1]
 )
 }
 \arguments{
@@ -17,6 +18,10 @@ order_usn(
 \item{type}{char, one of "LINESTRING" (default) or "MULTIPOINT"}
 
 \item{direction}{chr one of "any", "eastward" (default), "westward"}
+
+\item{resolve_multiline}{char, when \code{type} is LINESTRING a conflict may arise when
+a wall is composed of multiple lines, which yields MULTILINESTRING.
+Set this to keep just the longest LINESTRING or to keep them all as MULTILINESTRING.}
 }
 \value{
 a LINESTRING object
