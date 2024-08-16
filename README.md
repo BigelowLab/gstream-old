@@ -20,6 +20,43 @@ install directly from github.
 
     remotes::install("BigelowLab/gstream)
 
+## Gulf Stream SST Gradient Index (GSGI)
+
+[Parfitt, Kwon, and Andres,
+2022](https://agupubs.onlinelibrary.wiley.com/doi/10.1029/2022GL100914)
+proposed a Gulf Stream Gradient Index. Data is served for 2004-2019
+[here](https://www2.whoi.edu/staff/ykwon/data/).
+
+> Parfitt, R., Y.-O. Kwon, and M. Andres, 2022: A monthly index for the
+> large-scale sea surface temperature gradient across the separated Gulf
+> Stream. Geophys. Res. Lett., 49, e2022GL100914.
+> <https://doi.org/10.1029/2022GL100914>.
+
+``` r
+suppressPackageStartupMessages({
+  library(sf)
+  library(dplyr)
+  library(gstream)
+  library(rnaturalearth)
+})
+
+x = read_gsgi() |>
+  dplyr::glimpse()
+```
+
+    ## Rows: 324
+    ## Columns: 4
+    ## $ date           <date> 1993-01-01, 1993-02-01, 1993-03-01, 1993-04-01, 1993-0…
+    ## $ SST.N.deseason <dbl> -0.73139479, 0.37673571, 0.55352506, 0.89345027, 0.2047…
+    ## $ SST.S.deseason <dbl> -0.29115456, -0.34953310, -0.35755056, -0.29019442, -0.…
+    ## $ dSST.deseason  <dbl> -0.44024022, 0.72626881, 0.91107561, 1.18364469, 0.5361…
+
+``` r
+plot_gsgi(x)
+```
+
+![](README_files/figure-gfm/plot_gsgi-1.png)<!-- -->
+
 ## Data from US Navy
 
 ### Arhcived data
@@ -32,22 +69,15 @@ They also provide [daily
 updates](https://ocean.weather.gov/gulf_stream_latest.txt).
 
 ``` r
-suppressPackageStartupMessages({
-  library(sf)
-  library(dplyr)
-  library(gstream)
-  library(rnaturalearth)
-})
-
 x = read_usn(what = "orig") |>
   dplyr::glimpse()
 ```
 
-    ## Rows: 3,909
+    ## Rows: 3,905
     ## Columns: 3
-    ## $ date     <date> 2010-01-22, 2010-01-22, 2010-01-25, 2010-01-25, 2010-01-27, …
-    ## $ wall     <chr> "north", "south", "north", "south", "north", "south", "north"…
-    ## $ geometry <MULTIPOINT [°]> MULTIPOINT ((-80.2 25), (-8..., MULTIPOINT ((-77.5…
+    ## $ date <date> 2010-01-22, 2010-01-22, 2010-01-25, 2010-01-25, 2010-01-27, 2010…
+    ## $ wall <chr> "north", "south", "north", "south", "north", "south", "north", "s…
+    ## $ geom <MULTIPOINT [°]> MULTIPOINT ((-80.2 25), (-8..., MULTIPOINT ((-77.5 31.…
 
 This reads in all of the data stored with the package. We can then do a
 simple plot of all of the locations.
@@ -78,16 +108,13 @@ be stored anywhere, but by default we look for it isn `~/.gstream`.
 
 ``` r
 cfg = read_configuration()
-```
-
-    ## Warning in readLines(file, warn = readLines.warn): incomplete final line found
-    ## on '~/.gstream'
-
-``` r
 cfg
 ```
 
     ## $usn
+    ## $usn$datapath
+    ## [1] "/mnt/s1/projects/ecocast/coredata/gstream/usn"
+    ## 
     ## $usn$rawpath
     ## [1] "/mnt/s1/projects/ecocast/coredata/gstream/usn/raw"
     ## 

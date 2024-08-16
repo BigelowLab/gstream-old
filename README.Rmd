@@ -28,13 +28,13 @@ Use the [remotes](https://CRAN.R-project.org/package=remotes) package to install
 remotes::install("BigelowLab/gstream)
 ```
 
-## Data from US Navy
+## Gulf Stream SST Gradient Index (GSGI)
 
-### Arhcived data
+[Parfitt, Kwon, and Andres, 2022](https://agupubs.onlinelibrary.wiley.com/doi/10.1029/2022GL100914) proposed a Gulf Stream Gradient Index.  Data is served for 2004-2019 [here](https://www2.whoi.edu/staff/ykwon/data/).
 
-[NOAA's Ocean Prediction Center](https://ocean.weather.gov/) provides a FTP server](https://ftp.opc.ncep.noaa.gov/grids/experimental/GStream) for downloads by year.  We have downloaded these and repackaged into spatial format files - these are included with the `gstream` package. They also provide [daily updates](https://ocean.weather.gov/gulf_stream_latest.txt).
+> Parfitt, R., Y.-O. Kwon, and M. Andres, 2022: A monthly index for the large-scale sea surface temperature gradient across the separated Gulf Stream. Geophys. Res. Lett., 49, e2022GL100914. https://doi.org/10.1029/2022GL100914.
 
-```{r, warn = FALSE}
+```{r read_gsgi}
 suppressPackageStartupMessages({
   library(sf)
   library(dplyr)
@@ -42,6 +42,21 @@ suppressPackageStartupMessages({
   library(rnaturalearth)
 })
 
+x = read_gsgi() |>
+  dplyr::glimpse()
+```
+
+```{r plot_gsgi}
+plot_gsgi(x)
+```
+
+## Data from US Navy
+
+### Arhcived data
+
+[NOAA's Ocean Prediction Center](https://ocean.weather.gov/) provides a FTP server](https://ftp.opc.ncep.noaa.gov/grids/experimental/GStream) for downloads by year.  We have downloaded these and repackaged into spatial format files - these are included with the `gstream` package. They also provide [daily updates](https://ocean.weather.gov/gulf_stream_latest.txt).
+
+```{r, warn = FALSE}
 x = read_usn(what = "orig") |>
   dplyr::glimpse()
 ```
