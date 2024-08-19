@@ -5,8 +5,8 @@
 \title{Compute distances between consecutive points along a LINESTRING path.}
 \usage{
 st_path_lengths(
-  x = order_usn(dplyr::filter(read_usn(year = "2020"), date == as.Date("2020-12-19"),
-    wall == "north")),
+  x = order_usn(dplyr::filter(read_usn(year = "2020"), .data$date ==
+    as.Date("2020-12-19"), .data$wall == "north")),
   ...
 )
 }

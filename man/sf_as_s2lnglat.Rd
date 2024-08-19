@@ -4,7 +4,7 @@
 \alias{sf_as_s2lnglat}
 \title{Convert an sf object to a s2_lnglat object}
 \usage{
-sf_as_s2lnglat(x = read_usn(ordered = FALSE))
+sf_as_s2lnglat(x = read_usn(what = "orig"))
 }
 \arguments{
 \item{x}{an SF object to convert}

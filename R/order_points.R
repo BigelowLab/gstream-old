@@ -3,7 +3,7 @@
 #' @export
 #' @param x an SF object to convert
 #' @return list of wk_xy object (one per row of x)
-sf_as_s2lnglat = function(x = read_usn(ordered = FALSE)){
+sf_as_s2lnglat = function(x = read_usn(what = "orig")){
   dplyr::rowwise(x) |>
     dplyr::group_map(
       function(tbl, key){

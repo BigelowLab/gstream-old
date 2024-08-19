@@ -28,13 +28,11 @@ Use the [remotes](https://CRAN.R-project.org/package=remotes) package to install
 remotes::install("BigelowLab/gstream)
 ```
 
-## Gulf Stream SST Gradient Index (GSGI)
+## Gulf Stream Index (GSI)
 
-[Parfitt, Kwon, and Andres, 2022](https://agupubs.onlinelibrary.wiley.com/doi/10.1029/2022GL100914) proposed a Gulf Stream Gradient Index.  Data is served for 2004-2019 [here](https://www2.whoi.edu/staff/ykwon/data/).
+The [Gulf Stream Index](https://en.wikipedia.org/wiki/Latitude_of_the_Gulf_Stream_and_the_Gulf_Stream_north_wall_index) provides a positional index. Data are provides via the [ecodata](https://noaa-edab.github.io/ecodata/) R package. If the package is installed, then this package serves the data it provides with a convneient plotting routine.  If the package is not isnatlled, then it is an error to try to read the GSI index with this package.
 
-> Parfitt, R., Y.-O. Kwon, and M. Andres, 2022: A monthly index for the large-scale sea surface temperature gradient across the separated Gulf Stream. Geophys. Res. Lett., 49, e2022GL100914. https://doi.org/10.1029/2022GL100914.
-
-```{r read_gsgi}
+```{r}
 suppressPackageStartupMessages({
   library(sf)
   library(dplyr)
@@ -42,12 +40,27 @@ suppressPackageStartupMessages({
   library(rnaturalearth)
 })
 
+x = read_gsi() |>
+  dplyr::glimpse()
+```
+
+```{r}
+plot(x)
+```
+
+## Gulf Stream SST Gradient Index (GSGI)
+
+[Parfitt, Kwon, and Andres, 2022](https://agupubs.onlinelibrary.wiley.com/doi/10.1029/2022GL100914) proposed a Gulf Stream Gradient Index.  Data is served for 2004-2019 [here](https://www2.whoi.edu/staff/ykwon/data/).
+
+> Parfitt, R., Y.-O. Kwon, and M. Andres, 2022: A monthly index for the large-scale sea surface temperature gradient across the separated Gulf Stream. Geophys. Res. Lett., 49, e2022GL100914. https://doi.org/10.1029/2022GL100914.
+
+```{r read_gsgi}
 x = read_gsgi() |>
   dplyr::glimpse()
 ```
 
 ```{r plot_gsgi}
-plot_gsgi(x)
+plot(x)
 ```
 
 ## Data from US Navy

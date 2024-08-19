@@ -28,8 +28,8 @@ walls_to_polygons = function(x, bb = NULL, verbose = FALSE,
         if (nrow(tbl) != 2) return(NULL)
         if (verbose) cat("w2p", format(tbl$date[1], "%Y-%m-%d"), "\n")
         tbl = dplyr::arrange(tbl, .data$wall)
-        n = sf::st_coordinates(dplyr::filter(tbl, wall == "north"))
-        s = sf::st_coordinates(dplyr::filter(tbl, wall == "south"))
+        n = sf::st_coordinates(dplyr::filter(tbl, .data$wall == "north"))
+        s = sf::st_coordinates(dplyr::filter(tbl, .data$wall == "south"))
         s = s[rev(seq_len(nrow(s))), ]
         m = do.call(rbind, list(n, s, n[1,]))[,1:2]
         p = sf::st_polygon(x = list(m)) |>
@@ -190,7 +190,7 @@ textg = function(x, ..., what = c("all", "ends")){
   }
 }
 plotg = function(x, ...){
-  plot(st_geometry(x), ...)
+  plot(sf::st_geometry(x), ...)
 }
 plot2 = function(x, y){
   plotg(x, axes = T, type = "l", reset = FALSE)

@@ -14,8 +14,13 @@ Encoding: UTF-8
 RoxygenNote: 7.3.2
 Roxygen: list(markdown = TRUE)
 Imports:
+  utils,
+  graphics,
+  stats,
   rlang,
   yaml,
   s2,
   sf,
   dplyr
+Suggests: 
+  ecodata

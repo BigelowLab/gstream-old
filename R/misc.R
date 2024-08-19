@@ -30,8 +30,8 @@ get_geometry_type <- function(x, recursive = FALSE){
 #' @param x sf LINESTRING object
 #' @return a list of path lengths, one per row
 st_path_lengths = function(x = read_usn(year = "2020") |> 
-                             dplyr::filter(date == as.Date("2020-12-19"), 
-                                           wall == "north") |>
+                             dplyr::filter(.data$date == as.Date("2020-12-19"), 
+                                           .data$wall == "north") |>
                              order_usn(), 
                            ...){
   stopifnot(get_geometry_type(x) == "LINESTRING")

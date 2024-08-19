@@ -2,7 +2,7 @@
 #' 
 #' @export
 #' @param file char, the name of the file to import
-#' @return a tibble of data
+#' @return a tibble of data and of class "gsgi"
 import_gsgi = function(file = "/mnt/s1/projects/ecocast/coredata/gstream/gsi/NOAA_OISST_GS_dSST_index_monthly_1993_2019_release.mat"){
   if (!requireNamespace("R.matlab")){
     stop("R.matlab package is required - please install it first")
@@ -36,7 +36,9 @@ import_gsgi = function(file = "/mnt/s1/projects/ecocast/coredata/gstream/gsi/NOA
 #' @param filename char, the name of the file to read
 #' @return tibble of date, deseasoned SST north and south and the difference (gradient)
 read_gsgi = function(file = system.file("gsgi/gsgi.csv.gz", package = "gstream")){
-  readr::read_csv(file, col_types = "Dnnn")
+  x = readr::read_csv(file, col_types = "Dnnn")
+  class(x) <- c("gsgi", class(x))
+  x
 }
 
 
@@ -46,9 +48,9 @@ read_gsgi = function(file = system.file("gsgi/gsgi.csv.gz", package = "gstream")
 #' @param x the gsgi data
 #' @param smooth logical, if TRUE add a smoothing line
 #' @return a ggplot2 object
-plot_gsgi = function(x, smooth = TRUE){
+plot.gsgi = function(x, smooth = TRUE){
   
-  gg = ggplot2::ggplot(data = x, ggplot2::aes(x = date, y = dSST.deseason)) + 
+  gg = ggplot2::ggplot(data = x, ggplot2::aes(x = .data$date, y = .data$dSST.deseason)) + 
     ggplot2::geom_line() +
     ggplot2::labs(x = "Date", y = "dSST (deseasoned, C)", 
                   title = "Gulf Stream SST Gradient Index",

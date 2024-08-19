@@ -20,6 +20,44 @@ install directly from github.
 
     remotes::install("BigelowLab/gstream)
 
+## Gulf Stream Index (GSI)
+
+The [Gulf Stream
+Index](https://en.wikipedia.org/wiki/Latitude_of_the_Gulf_Stream_and_the_Gulf_Stream_north_wall_index)
+provides a positional index. Data are provides via the
+[ecodata](https://noaa-edab.github.io/ecodata/) R package. If the
+package is installed, then this package serves the data it provides with
+a convneient plotting routine. If the package is not isnatlled, then it
+is an error to try to read the GSI index with this package.
+
+``` r
+suppressPackageStartupMessages({
+  library(sf)
+  library(dplyr)
+  library(gstream)
+  library(rnaturalearth)
+})
+
+x = read_gsi() |>
+  dplyr::glimpse()
+```
+
+    ## Loading required namespace: ecodata
+
+    ## Rows: 1,676
+    ## Columns: 5
+    ## $ date  <date> 1954-01-01, 1954-01-01, 1954-02-01, 1954-02-01, 1954-03-01, 195…
+    ## $ Time  <dbl> 1954.01, 1954.01, 1954.02, 1954.02, 1954.03, 1954.03, 1954.04, 1…
+    ## $ Var   <chr> "gulf stream index", "western gulf stream index", "gulf stream i…
+    ## $ Value <dbl> 1.6811664, 0.6118636, 1.8233541, 0.6203325, 1.5028627, 0.7795198…
+    ## $ EPU   <chr> "All", "All", "All", "All", "All", "All", "All", "All", "All", "…
+
+``` r
+plot(x)
+```
+
+![](README_files/figure-gfm/unnamed-chunk-2-1.png)<!-- -->
+
 ## Gulf Stream SST Gradient Index (GSGI)
 
 [Parfitt, Kwon, and Andres,
@@ -33,13 +71,6 @@ proposed a Gulf Stream Gradient Index. Data is served for 2004-2019
 > <https://doi.org/10.1029/2022GL100914>.
 
 ``` r
-suppressPackageStartupMessages({
-  library(sf)
-  library(dplyr)
-  library(gstream)
-  library(rnaturalearth)
-})
-
 x = read_gsgi() |>
   dplyr::glimpse()
 ```
@@ -52,7 +83,7 @@ x = read_gsgi() |>
     ## $ dSST.deseason  <dbl> -0.44024022, 0.72626881, 0.91107561, 1.18364469, 0.5361…
 
 ``` r
-plot_gsgi(x)
+plot(x)
 ```
 
 ![](README_files/figure-gfm/plot_gsgi-1.png)<!-- -->
@@ -90,7 +121,7 @@ plot(x['wall'], pch = ".", axes = TRUE, reset = FALSE)
 plot(sf::st_geometry(coast), add = TRUE)
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-2-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-4-1.png)<!-- -->
 
 ### Downloading daily updates and configuration
 
@@ -140,7 +171,7 @@ d = dplyr::filter(x, date == as.Date("2020-12-19"), wall == "north")
 plot(sf::st_geometry(d), type = "l", axes = TRUE)
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-4-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-6-1.png)<!-- -->
 
 With thanks to [Dewey
 Dunnington](https://gist.github.com/paleolimbot/0be47836de5008f308959923dac02c5b#gistcomment-5079768)
@@ -153,4 +184,4 @@ plot(sf::st_geometry(d), type = "l", axes = TRUE, reset= FALSE)
 plot(sf::st_geometry(do), type = "l", add = TRUE, col = "orange")
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-5-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-7-1.png)<!-- -->

@@ -13,7 +13,7 @@ import_gsgi(
 \item{file}{char, the name of the file to import}
 }
 \value{
-a tibble of data
+a tibble of data and of class "gsgi"
 }
 \description{
 Import (from matlab) the GSGI index data
