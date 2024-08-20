@@ -1,0 +1,55 @@
+File /usr/lib64/R/library/gstream/rapid-amoc/moc_transports.nc (NC_FORMAT_NETCDF4):
+
+     9 variables (excluding dimension variables):
+        double t_therm10[time]   (Contiguous storage)  
+            _FillValue: -99999
+            long_name: thermocline recirculation 0-800m
+            units: Sv
+        double t_aiw10[time]   (Contiguous storage)  
+            _FillValue: -99999
+            long_name: intermediate water 800-1100m
+            units: Sv
+        double t_ud10[time]   (Contiguous storage)  
+            _FillValue: -99999
+            long_name: upper NADW 1100-3000m
+            units: Sv
+        double t_ld10[time]   (Contiguous storage)  
+            _FillValue: -99999
+            long_name: lower NADW 3000-5000m
+            units: Sv
+        double t_bw10[time]   (Contiguous storage)  
+            _FillValue: -99999
+            long_name: AABW >5000m
+            units: Sv
+        double t_gs10[time]   (Contiguous storage)  
+            _FillValue: -99999
+            long_name: Florida Straits transport
+            units: Sv
+        double t_ek10[time]   (Contiguous storage)  
+            _FillValue: -99999
+            long_name: Ekman transport
+            units: Sv
+        double t_umo10[time]   (Contiguous storage)  
+            _FillValue: -99999
+            long_name:  upper Mid-Ocean transport
+            units: Sv
+        double moc_mar_hc10[time]   (Contiguous storage)  
+            _FillValue: -99999
+            long_name: overturning transport 
+            units: Sv
+
+     1 dimensions:
+        time  Size:13057 
+            long_name: time in days
+            units: days since 2004-4-1 00:00:00
+
+    9 global attributes:
+        Title: RAPID MOC timeseries
+        Institution: National Oceanography Centre,UK
+        Website: http://www.rapid.ac.uk/rapidmoc
+        Acknowledgement: The RAPID-MOC monitoring project is funded by the Natural Environment Research Council and data is freely available from www.rapid.ac.uk/rapidmoc
+        Created_by: Ben Moat
+        Creation_date: 08-Sep-2023
+        Principle_investigator: Ben Moat
+        Principle_investigator_email: ben.moat@noc.ac.uk
+        DOI: doi: 10.5285/04c79ece-3186-349a-e063-6c86abc0158c

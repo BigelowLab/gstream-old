@@ -63,6 +63,26 @@ x = read_gsgi() |>
 plot(x)
 ```
 
+## Data from [RAPID-AMOC](https://rapid.ac.uk/rapidmoc)
+
+
+Data from the RAPID AMOC monitoring project is funded by the Natural Environment Research Council and are freely available from www.rapid.ac.uk/rapidmoc.
+
+
+
+Reference for Version v2020.2
+>Moat B.I.; Frajka-Williams E., Smeed D.A.; Rayner D.; Johns W.E.; Baringer M.O.; Volkov, D.; Collins, J. (2022). Atlantic meridional overturning circulation observed by the RAPID-MOCHA-WBTS (RAPID-Meridional Overturning Circulation and Heatflux Array-Western Boundary Time Series) array at 26N from 2004 to 2020 (v2020.2), British Oceanographic Data Centre - Natural Environment Research Council, UK. doi:10.5285/e91b10af-6f0a-7fa7-e053-6c86abc05a09 
+
+```{r, warning=FALSE}
+x = read_moc_transports() |>
+  dplyr::glimpse()
+```
+
+```{r}
+plot(x)
+```
+
+
 ## Data from US Navy
 
 ### Arhcived data

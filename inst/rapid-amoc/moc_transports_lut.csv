@@ -1,0 +1,11 @@
+longname, name
+Date,date
+MOC transports,moc_mar_hc10
+Upper mid-ocean transport,t_umo10
+Florida Straits transport,t_gs10
+Ekman transport,t_ek10
+0-800m thermocline recirculation,t_therm10
+800-1100m intermediate water,t_aiw10
+1100-3000m upper North Atlantic Deep Water,t_ud10
+3000-5000m lower North Atlantic Deep Water,t_ld10
+> 5000m Antarctic Bottom Water,t_bw10

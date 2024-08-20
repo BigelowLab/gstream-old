@@ -88,6 +88,50 @@ plot(x)
 
 ![](README_files/figure-gfm/plot_gsgi-1.png)<!-- -->
 
+## Data from [RAPID-AMOC](https://rapid.ac.uk/rapidmoc)
+
+Data from the RAPID AMOC monitoring project is funded by the Natural
+Environment Research Council and are freely available from
+www.rapid.ac.uk/rapidmoc.
+
+Reference for Version v2020.2 \>Moat B.I.; Frajka-Williams E., Smeed
+D.A.; Rayner D.; Johns W.E.; Baringer M.O.; Volkov, D.; Collins, J.
+(2022). Atlantic meridional overturning circulation observed by the
+RAPID-MOCHA-WBTS (RAPID-Meridional Overturning Circulation and Heatflux
+Array-Western Boundary Time Series) array at 26N from 2004 to 2020
+(v2020.2), British Oceanographic Data Centre - Natural Environment
+Research Council, UK. <doi:10.5285/e91b10af-6f0a-7fa7-e053-6c86abc05a09>
+
+``` r
+x = read_moc_transports() |>
+  dplyr::glimpse()
+```
+
+    ## Rows: 13,057
+    ## Columns: 10
+    ## $ date         <date> 2004-01-02, 2004-01-02, 2004-01-03, 2004-01-03, 2004-01-…
+    ## $ t_therm10    <dbl> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, -16.71886, -16.94…
+    ## $ t_aiw10      <dbl> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, 0.8313935, 0.7999…
+    ## $ t_ud10       <dbl> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, -9.957221, -9.954…
+    ## $ t_ld10       <dbl> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, -3.133432, -3.305…
+    ## $ t_bw10       <dbl> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, 1.4894769, 1.4455…
+    ## $ t_gs10       <dbl> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, 28.60981, 28.4917…
+    ## $ t_ek10       <dbl> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, -1.1396932, -0.55…
+    ## $ t_umo10      <dbl> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, -15.85125, -16.10…
+    ## $ moc_mar_hc10 <dbl> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, 11.63748, 11.8528…
+
+``` r
+plot(x)
+```
+
+    ## Warning: Removed 180 rows containing non-finite outside the scale range
+    ## (`stat_smooth()`).
+
+    ## Warning: Removed 20 rows containing missing values or values outside the scale range
+    ## (`geom_line()`).
+
+![](README_files/figure-gfm/unnamed-chunk-4-1.png)<!-- -->
+
 ## Data from US Navy
 
 ### Arhcived data
@@ -121,7 +165,7 @@ plot(x['wall'], pch = ".", axes = TRUE, reset = FALSE)
 plot(sf::st_geometry(coast), add = TRUE)
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-4-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-6-1.png)<!-- -->
 
 ### Downloading daily updates and configuration
 
@@ -171,7 +215,7 @@ d = dplyr::filter(x, date == as.Date("2020-12-19"), wall == "north")
 plot(sf::st_geometry(d), type = "l", axes = TRUE)
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-6-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-8-1.png)<!-- -->
 
 With thanks to [Dewey
 Dunnington](https://gist.github.com/paleolimbot/0be47836de5008f308959923dac02c5b#gistcomment-5079768)
@@ -184,4 +228,4 @@ plot(sf::st_geometry(d), type = "l", axes = TRUE, reset= FALSE)
 plot(sf::st_geometry(do), type = "l", add = TRUE, col = "orange")
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-7-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-9-1.png)<!-- -->

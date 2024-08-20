@@ -21,6 +21,8 @@ Imports:
   yaml,
   s2,
   sf,
+  ncdf4,
+  tidyr,
   dplyr
 Suggests: 
   ecodata
