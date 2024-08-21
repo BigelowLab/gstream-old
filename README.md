@@ -18,7 +18,7 @@ Serving Gulf Stream datasets directly from R.
 Use the [remotes](https://CRAN.R-project.org/package=remotes) package to
 install directly from github.
 
-    remotes::install("BigelowLab/gstream)
+    remotes::install("BigelowLab/gstream")
 
 ## Gulf Stream Index (GSI)
 
