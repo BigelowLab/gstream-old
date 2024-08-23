@@ -20,6 +20,21 @@ install directly from github.
 
     remotes::install("BigelowLab/gstream)
 
+## Usage
+
+The package contains a number of data sets compiled with the purpose of
+aiding Gulf Stream and AMOC analyses. Beyond access and simple plotting
+utilities, no effort has been made to include sophisticated analyses.
+
+``` r
+suppressPackageStartupMessages({
+  library(gstream)
+  library(sf)
+  library(dplyr)
+  library(rnaturalearth)
+})
+```
+
 ## Gulf Stream Index (GSI)
 
 The [Gulf Stream
@@ -27,17 +42,10 @@ Index](https://en.wikipedia.org/wiki/Latitude_of_the_Gulf_Stream_and_the_Gulf_St
 provides a positional index. Data are provides via the
 [ecodata](https://noaa-edab.github.io/ecodata/) R package. If the
 package is installed, then this package serves the data it provides with
-a convneient plotting routine. If the package is not isnatlled, then it
+a convneient plotting routine. If the package is not installed, then it
 is an error to try to read the GSI index with this package.
 
 ``` r
-suppressPackageStartupMessages({
-  library(sf)
-  library(dplyr)
-  library(gstream)
-  library(rnaturalearth)
-})
-
 x = read_gsi() |>
   dplyr::glimpse()
 ```
@@ -56,7 +64,7 @@ x = read_gsi() |>
 plot(x)
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-2-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-3-1.png)<!-- -->
 
 ## Gulf Stream SST Gradient Index (GSGI)
 
@@ -130,7 +138,65 @@ plot(x)
     ## Warning: Removed 20 rows containing missing values or values outside the scale range
     ## (`geom_line()`).
 
-![](README_files/figure-gfm/unnamed-chunk-4-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-5-1.png)<!-- -->
+
+## SST Patch Data
+
+We defined two bounding boxes in the North Atlantic - one for the
+persistent “cold blob” centered south of Iceland and another for the
+“warm spot” south of New England and Martime Canada. We extracted
+monthly
+[ERSST](https://www.ncei.noaa.gov/products/extended-reconstructed-sst)
+data and computed monthly
+[OISST](https://www.ncei.noaa.gov/products/optimum-interpolation-sst)
+sea surface temperature statistics for each.
+
+``` r
+# read the boxes but exclude the northern hemisphere record
+bb = read_patch_bbs() |>
+  dplyr::filter(name != "nh")
+bb
+```
+
+    ## Simple feature collection with 2 features and 1 field
+    ## Geometry type: POLYGON
+    ## Dimension:     XY
+    ## Bounding box:  xmin: -74 ymin: 36 xmax: -15 ymax: 60
+    ## Geodetic CRS:  WGS 84
+    ## # A tibble: 2 × 2
+    ##   name                                            geom
+    ## * <chr>                                  <POLYGON [°]>
+    ## 1 cold_blob ((-30 42, -15 42, -15 60, -30 60, -30 42))
+    ## 2 warm_spot ((-74 36, -58 36, -58 42, -74 42, -74 36))
+
+``` r
+x = read_patch_month() |>
+  dplyr::glimpse()
+```
+
+    ## Rows: 5,046
+    ## Columns: 9
+    ## $ date   <date> 1854-01-01, 1854-02-01, 1854-03-01, 1854-04-01, 1854-05-01, 18…
+    ## $ region <chr> "cold_blob", "cold_blob", "cold_blob", "cold_blob", "cold_blob"…
+    ## $ source <chr> "ersst", "ersst", "ersst", "ersst", "ersst", "ersst", "ersst", …
+    ## $ min    <dbl> 8.886023, 9.316138, 8.727843, 8.101231, 8.113076, 7.979538, 8.8…
+    ## $ q25    <dbl> 10.321997, 10.784625, 10.092959, 9.832815, 10.034244, 10.801755…
+    ## $ median <dbl> 11.16081, 11.27052, 10.82493, 11.25506, 11.79660, 13.18124, 15.…
+    ## $ mean   <dbl> 11.39416, 11.53059, 11.10309, 11.34614, 11.86744, 13.19618, 15.…
+    ## $ q75    <dbl> 12.43899, 12.25503, 11.89755, 12.79622, 13.57947, 15.63272, 18.…
+    ## $ max    <dbl> 14.99075, 14.55934, 14.96488, 15.87475, 17.07551, 19.63632, 22.…
+
+``` r
+plot_patch_location(bb)
+```
+
+![](README_files/figure-gfm/unnamed-chunk-8-1.png)<!-- -->
+
+``` r
+plot(x)
+```
+
+![](README_files/figure-gfm/unnamed-chunk-9-1.png)<!-- -->
 
 ## Data from US Navy
 
@@ -165,7 +231,7 @@ plot(x['wall'], pch = ".", axes = TRUE, reset = FALSE)
 plot(sf::st_geometry(coast), add = TRUE)
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-6-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-11-1.png)<!-- -->
 
 ### Downloading daily updates and configuration
 
@@ -215,7 +281,7 @@ d = dplyr::filter(x, date == as.Date("2020-12-19"), wall == "north")
 plot(sf::st_geometry(d), type = "l", axes = TRUE)
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-8-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-13-1.png)<!-- -->
 
 With thanks to [Dewey
 Dunnington](https://gist.github.com/paleolimbot/0be47836de5008f308959923dac02c5b#gistcomment-5079768)
@@ -228,4 +294,4 @@ plot(sf::st_geometry(d), type = "l", axes = TRUE, reset= FALSE)
 plot(sf::st_geometry(do), type = "l", add = TRUE, col = "orange")
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-9-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-14-1.png)<!-- -->

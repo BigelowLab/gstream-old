@@ -28,18 +28,26 @@ Use the [remotes](https://CRAN.R-project.org/package=remotes) package to install
 remotes::install("BigelowLab/gstream)
 ```
 
-## Gulf Stream Index (GSI)
+## Usage
 
-The [Gulf Stream Index](https://en.wikipedia.org/wiki/Latitude_of_the_Gulf_Stream_and_the_Gulf_Stream_north_wall_index) provides a positional index. Data are provides via the [ecodata](https://noaa-edab.github.io/ecodata/) R package. If the package is installed, then this package serves the data it provides with a convneient plotting routine.  If the package is not isnatlled, then it is an error to try to read the GSI index with this package.
+The package contains a number of data sets compiled with the purpose of aiding Gulf Stream and AMOC analyses. Beyond access and simple plotting utilities, no effort has been made to include sophisticated analyses.
 
 ```{r}
 suppressPackageStartupMessages({
+  library(gstream)
   library(sf)
   library(dplyr)
-  library(gstream)
   library(rnaturalearth)
 })
+```
 
+
+## Gulf Stream Index (GSI)
+
+The [Gulf Stream Index](https://en.wikipedia.org/wiki/Latitude_of_the_Gulf_Stream_and_the_Gulf_Stream_north_wall_index) provides a positional index. Data are provides via the [ecodata](https://noaa-edab.github.io/ecodata/) R package. If the package is installed, then this package serves the data it provides with a convneient plotting routine.  If the package is not installed, then it is an error to try to read the GSI index with this package.
+
+
+```{r}
 x = read_gsi() |>
   dplyr::glimpse()
 ```
@@ -65,10 +73,7 @@ plot(x)
 
 ## Data from [RAPID-AMOC](https://rapid.ac.uk/rapidmoc)
 
-
 Data from the RAPID AMOC monitoring project is funded by the Natural Environment Research Council and are freely available from www.rapid.ac.uk/rapidmoc.
-
-
 
 Reference for Version v2020.2
 >Moat B.I.; Frajka-Williams E., Smeed D.A.; Rayner D.; Johns W.E.; Baringer M.O.; Volkov, D.; Collins, J. (2022). Atlantic meridional overturning circulation observed by the RAPID-MOCHA-WBTS (RAPID-Meridional Overturning Circulation and Heatflux Array-Western Boundary Time Series) array at 26N from 2004 to 2020 (v2020.2), British Oceanographic Data Centre - Natural Environment Research Council, UK. doi:10.5285/e91b10af-6f0a-7fa7-e053-6c86abc05a09 
@@ -82,6 +87,28 @@ x = read_moc_transports() |>
 plot(x)
 ```
 
+## SST Patch Data
+
+We defined two bounding boxes in the North Atlantic - one for the persistent "cold blob" centered south of Iceland and another for the "warm spot" south of New England and Martime Canada.  We extracted monthly [ERSST](https://www.ncei.noaa.gov/products/extended-reconstructed-sst) data and computed monthly [OISST](https://www.ncei.noaa.gov/products/optimum-interpolation-sst) sea surface temperature statistics for each.
+
+```{r}
+# read the boxes but exclude the northern hemisphere record
+bb = read_patch_bbs() |>
+  dplyr::filter(name != "nh")
+bb
+```
+```{r}
+x = read_patch_month() |>
+  dplyr::glimpse()
+```
+
+```{r}
+plot_patch_location(bb)
+```
+
+```{r}
+plot(x)
+```
 
 ## Data from US Navy
 

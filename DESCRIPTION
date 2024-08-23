@@ -25,4 +25,5 @@ Imports:
   tidyr,
   dplyr
 Suggests: 
-  ecodata
+  ecodata,
+  rnaturalearth
