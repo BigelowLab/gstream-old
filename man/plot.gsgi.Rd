@@ -4,12 +4,15 @@
 \alias{plot.gsgi}
 \title{Plot gsgi data time series}
 \usage{
-\method{plot}{gsgi}(x, smooth = TRUE)
+\method{plot}{gsgi}(x, smooth = TRUE, by = c("none", "month", "year")[1])
 }
 \arguments{
 \item{x}{the gsgi data}
 
 \item{smooth}{logical, if TRUE add a smoothing line}
+
+\item{by}{chr, one of 'none' (default timeseries), 'month' (ghost plot by month over the years)
+or 'year' a box plot by year}
 }
 \value{
 a ggplot2 object

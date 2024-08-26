@@ -82,6 +82,13 @@ x = read_gsgi() |>
 plot(x)
 ```
 
+We also can plot from a climatology perspective.
+
+```{r, plot_gsgi_month}
+plot(x, by = "month")
+plot(x, by = "year")
+```
+
 ## Data from [RAPID-AMOC](https://rapid.ac.uk/rapidmoc)
 
 Data from the RAPID AMOC monitoring project is funded by the Natural Environment Research Council and are freely available from www.rapid.ac.uk/rapidmoc.

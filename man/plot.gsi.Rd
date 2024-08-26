@@ -4,7 +4,7 @@
 \alias{plot.gsi}
 \title{Plot gsi data time series}
 \usage{
-\method{plot}{gsi}(x, smooth = TRUE, by = c("none", "month", "year"))
+\method{plot}{gsi}(x, smooth = TRUE, by = c("none", "month", "year")[1])
 }
 \arguments{
 \item{x}{the gsi data}

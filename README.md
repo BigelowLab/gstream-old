@@ -108,6 +108,20 @@ plot(x)
 
 ![](README_files/figure-gfm/plot_gsgi-1.png)<!-- -->
 
+We also can plot from a climatology perspective.
+
+``` r
+plot(x, by = "month")
+```
+
+![](README_files/figure-gfm/plot_gsgi_month-1.png)<!-- -->
+
+``` r
+plot(x, by = "year")
+```
+
+![](README_files/figure-gfm/plot_gsgi_month-2.png)<!-- -->
+
 ## Data from [RAPID-AMOC](https://rapid.ac.uk/rapidmoc)
 
 Data from the RAPID AMOC monitoring project is funded by the Natural

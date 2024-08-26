@@ -25,7 +25,7 @@ read_gsi = function(){
 #' @param by chr, one of 'none' (default timeseries), 'month' (ghost plot by month over the years)
 #'  or 'year' a box plot by year
 #' @return a ggplot2 object
-plot.gsi = function(x, smooth = TRUE, by = c("none", "month", "year")){
+plot.gsi = function(x, smooth = TRUE, by = c("none", "month", "year")[1]){
   
 
   
@@ -61,7 +61,6 @@ plot.gsi = function(x, smooth = TRUE, by = c("none", "month", "year")){
                     title = "Gulf Stream Index",
                     caption = "data source: https://noaa-edab.github.io/ecodata/") +
       ggplot2::scale_x_continuous(breaks = seq(from = mm[1]-5, to = mm[2]+5, by = 10))
-    gg + ggplot2::facet_wrap(~.data$Var)
     
   } else {
     
