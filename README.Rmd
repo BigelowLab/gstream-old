@@ -47,7 +47,7 @@ suppressPackageStartupMessages({
 The [Gulf Stream Index](https://en.wikipedia.org/wiki/Latitude_of_the_Gulf_Stream_and_the_Gulf_Stream_north_wall_index) provides a positional index. Data are provides via the [ecodata](https://noaa-edab.github.io/ecodata/) R package. If the package is installed, then this package serves the data it provides with a convneient plotting routine.  If the package is not installed, then it is an error to try to read the GSI index with this package.
 
 
-```{r}
+```{r, message=FALSE}
 x = read_gsi() |>
   dplyr::glimpse()
 ```
@@ -55,6 +55,17 @@ x = read_gsi() |>
 ```{r}
 plot(x)
 ```
+
+We can also plot from monthly and annual perspectives.
+
+```{r}
+plot(x, by = "month")
+```
+
+```{r}
+plot(x, by = 'year')
+```
+
 
 ## Gulf Stream SST Gradient Index (GSGI)
 

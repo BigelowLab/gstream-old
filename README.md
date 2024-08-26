@@ -18,7 +18,7 @@ Serving Gulf Stream datasets directly from R.
 Use the [remotes](https://CRAN.R-project.org/package=remotes) package to
 install directly from github.
 
-    remotes::install("BigelowLab/gstream")
+    remotes::install("BigelowLab/gstream)
 
 ## Usage
 
@@ -50,8 +50,6 @@ x = read_gsi() |>
   dplyr::glimpse()
 ```
 
-    ## Loading required namespace: ecodata
-
     ## Rows: 1,676
     ## Columns: 5
     ## $ date  <date> 1954-01-01, 1954-01-01, 1954-02-01, 1954-02-01, 1954-03-01, 195…
@@ -65,6 +63,20 @@ plot(x)
 ```
 
 ![](README_files/figure-gfm/unnamed-chunk-3-1.png)<!-- -->
+
+We can also plot from monthly and annual perspectives.
+
+``` r
+plot(x, by = "month")
+```
+
+![](README_files/figure-gfm/unnamed-chunk-4-1.png)<!-- -->
+
+``` r
+plot(x, by = 'year')
+```
+
+![](README_files/figure-gfm/unnamed-chunk-5-1.png)<!-- -->
 
 ## Gulf Stream SST Gradient Index (GSGI)
 
@@ -138,7 +150,7 @@ plot(x)
     ## Warning: Removed 20 rows containing missing values or values outside the scale range
     ## (`geom_line()`).
 
-![](README_files/figure-gfm/unnamed-chunk-5-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-7-1.png)<!-- -->
 
 ## SST Patch Data
 
@@ -190,13 +202,13 @@ x = read_patch_month() |>
 plot_patch_location(bb)
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-8-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-10-1.png)<!-- -->
 
 ``` r
 plot(x)
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-9-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-11-1.png)<!-- -->
 
 ## Data from US Navy
 
@@ -231,7 +243,7 @@ plot(x['wall'], pch = ".", axes = TRUE, reset = FALSE)
 plot(sf::st_geometry(coast), add = TRUE)
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-11-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-13-1.png)<!-- -->
 
 ### Downloading daily updates and configuration
 
@@ -281,7 +293,7 @@ d = dplyr::filter(x, date == as.Date("2020-12-19"), wall == "north")
 plot(sf::st_geometry(d), type = "l", axes = TRUE)
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-13-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-15-1.png)<!-- -->
 
 With thanks to [Dewey
 Dunnington](https://gist.github.com/paleolimbot/0be47836de5008f308959923dac02c5b#gistcomment-5079768)
@@ -294,4 +306,4 @@ plot(sf::st_geometry(d), type = "l", axes = TRUE, reset= FALSE)
 plot(sf::st_geometry(do), type = "l", add = TRUE, col = "orange")
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-14-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-16-1.png)<!-- -->

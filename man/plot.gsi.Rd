@@ -4,12 +4,15 @@
 \alias{plot.gsi}
 \title{Plot gsi data time series}
 \usage{
-\method{plot}{gsi}(x, smooth = TRUE)
+\method{plot}{gsi}(x, smooth = TRUE, by = c("none", "month", "year"))
 }
 \arguments{
 \item{x}{the gsi data}
 
-\item{smooth}{logical, if TRUE add a smoothing line}
+\item{smooth}{logical, if TRUE add a smoothing line (for timeseries only)}
+
+\item{by}{chr, one of 'none' (default timeseries), 'month' (ghost plot by month over the years)
+or 'year' a box plot by year}
 }
 \value{
 a ggplot2 object
